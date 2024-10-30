@@ -1,0 +1,87 @@
+\chapter{Sequence Alignment}
+\label{ch:alignment}
+
+\section{Evolution}
+
+\section{Homology}
+
+\section{Alignments}
+
+\section{Scoring}
+
+\section{Dynamic Programming}
+
+Dynamic programming, a term coined by Richard Bellman in the 1950s,
+\marginpar{\raggedright Bellman, R. (1952). On the Theory of Dynamic Programming. {\em Proc. of the National Academy of Sciences of the USA}, 38(8), 716–719.}
+is named to describe a method of solving complex problems by breaking them down into simpler subproblems. Bellman chose the term "dynamic programming" for strategic reasons. At the time, he was working with the U.S. government, where the word "programming" was a popular term and had positive associations, particularly in operations research and planning. By adding "dynamic," he aimed to emphasize the method's focus on time-evolving processes, as the problems it addressed often involved sequences of decisions over time.
+
+In dynamic programming, solutions to subproblems are stored (or "memorized") to avoid redundant calculations, which makes it particularly efficient for problems with overlapping subproblems, like shortest path, sequence alignment, and optimization problems. The approach dynamically combines solutions to smaller subproblems to build up the solution to the original, larger problem, leading to a highly structured and systematic way of tackling complex problems.
+
+\section{Local Alignment}
+
+\section{An Example: Longest Common Subsequence}
+
+\section{Scoring Revisited}
+
+\section{Protein Substitution Matrices}
+
+Protein substitution matrices are essential in bioinformatics, particularly for scoring alignments between protein sequences by assessing the likelihood of amino acid substitutions that may have occurred over time. BLOSUM (BLOcks SUbstitution Matrix), introduced by Henikoff and Henikoff in 1992, is among the most widely used matrices for this purpose. Derived from highly conserved protein regions, BLOSUM matrices help detect similarity between protein sequences by analyzing regions, or "blocks," that remain largely unchanged across members of protein families.
+
+The BLOSUM matrices
+\marginpar{A protein family is a group of proteins that share a common evolutionary origin, often re\-flected in similar structures, functions, or sequence motifs.} 
+were derived from data in the BLOCKS database, which, at the time, contained approximately 500 blocks from around 200 protein families. Each block represented a conserved protein region with minimal variation, allowing researchers to focus on substitutions that occur in these stable regions. This made the BLOCKS database ideal for deriving substitution scores that reflect genuine evolutionary trends.
+
+To create BLOSUM matrices, sequences within each block were grouped, or "clustered," according to a specific similarity threshold. Clustering in this context means that sequences within a block that share more than the specified percentage of similarity (e.g., 62\% for BLOSUM62) are grouped together as a single "cluster." Substitutions are then only counted between different clusters rather than within a cluster, reducing the influence of closely related sequences and emphasizing broader evolutionary changes. By capturing substitutions across clusters, BLOSUM matrices can better detect relationships in distantly related proteins.
+
+\begin{table}
+\caption{BLOSUM62 matrix.}
+\footnotesize
+\[
+\begin{array}{c|rrrrrrrrrrrrrrrrrrrr}
+   & A  & R  & N  & D  & C  & Q  & E  & G  & H  & I  & L  & K  & M  & F  & P  & S  & T  & W  & Y  & V \\
+\hline
+A  &  4 & -1 & -2 & -2 &  0 & -1 & -1 &  0 & -2 & -1 & -1 & -1 & -1 & -2 & -1 &  1 &  0 & -3 & -2 &  0 \\
+R  & -1 &  5 &  0 & -2 & -3 &  1 &  0 & -2 &  0 & -3 & -2 &  2 & -1 & -3 & -2 & -1 & -1 & -3 & -2 & -3 \\
+N  & -2 &  0 &  6 &  1 & -3 &  0 &  0 &  0 &  1 & -3 & -3 &  0 & -2 & -3 & -2 &  1 &  0 & -4 & -2 & -3 \\
+D  & -2 & -2 &  1 &  6 & -3 &  0 &  2 & -1 & -1 & -3 & -4 & -1 & -3 & -3 & -1 &  0 & -1 & -4 & -3 & -3 \\
+C  &  0 & -3 & -3 & -3 &  9 & -3 & -4 & -3 & -3 & -1 & -1 & -3 & -1 & -2 & -3 & -1 & -1 & -2 & -2 & -1 \\
+Q  & -1 &  1 &  0 &  0 & -3 &  5 &  2 & -2 &  0 & -3 & -2 &  1 &  0 & -3 & -1 &  0 & -1 & -2 & -1 & -2 \\
+E  & -1 &  0 &  0 &  2 & -4 &  2 &  5 & -2 &  0 & -3 & -3 &  1 & -2 & -3 & -1 &  0 & -1 & -3 & -2 & -2 \\
+G  &  0 & -2 &  0 & -1 & -3 & -2 & -2 &  6 & -2 & -4 & -4 & -2 & -3 & -3 & -2 &  0 & -2 & -2 & -3 & -3 \\
+H  & -2 &  0 &  1 & -1 & -3 &  0 &  0 & -2 &  8 & -3 & -3 & -1 & -2 & -1 & -2 & -1 & -2 & -2 &  2 & -3 \\
+I  & -1 & -3 & -3 & -3 & -1 & -3 & -3 & -4 & -3 &  4 &  2 & -3 &  1 &  0 & -3 & -2 & -1 & -3 & -1 &  3 \\
+L  & -1 & -2 & -3 & -4 & -1 & -2 & -3 & -4 & -3 &  2 &  4 & -2 &  2 &  0 & -3 & -2 & -1 & -2 & -1 &  1 \\
+K  & -1 &  2 &  0 & -1 & -3 &  1 &  1 & -2 & -1 & -3 & -2 &  5 & -1 & -3 & -1 &  0 & -1 & -3 & -2 & -2 \\
+M  & -1 & -1 & -2 & -3 & -1 &  0 & -2 & -3 & -2 &  1 &  2 & -1 &  5 &  0 & -2 & -1 & -1 & -1 & -1 &  1 \\
+F  & -2 & -3 & -3 & -3 & -2 & -3 & -3 & -3 & -1 &  0 &  0 & -3 &  0 &  6 & -4 & -2 & -2 &  1 &  3 & -1 \\
+P  & -1 & -2 & -2 & -1 & -3 & -1 & -1 & -2 & -2 & -3 & -3 & -1 & -2 & -4 &  7 & -1 & -1 & -4 & -3 & -2 \\
+S  &  1 & -1 &  1 &  0 & -1 &  0 &  0 &  0 & -1 & -2 & -2 &  0 & -1 & -2 & -1 &  4 &  1 & -3 & -2 & -2 \\
+T  &  0 & -1 &  0 & -1 & -1 & -1 & -1 & -2 & -2 & -1 & -1 & -1 & -1 & -2 & -1 &  1 &  5 & -2 & -2 &  0 \\
+W  & -3 & -3 & -4 & -4 & -2 & -2 & -3 & -2 & -2 & -3 & -2 & -3 & -1 &  1 & -4 & -3 & -2 & 11 &  2 & -3 \\
+Y  & -2 & -2 & -2 & -3 & -2 & -1 & -2 & -3 &  2 & -1 & -1 & -2 & -1 &  3 & -3 & -2 & -2 &  2 &  7 & -1 \\
+V  &  0 & -3 & -3 & -3 & -1 & -2 & -2 & -3 & -3 &  3 &  1 & -2 &  1 & -1 & -2 & -2 &  0 & -3 & -1 &  4 \\
+\end{array}
+\]
+\end{table}
+
+The process to derive a BLOSUM matrix involved several key steps:
+\begin{enumerate}
+    \item Sequences within each block were grouped according to the similarity threshold, forming clusters for sequences above the threshold.
+    \item Substitutions were then counted across these clusters. For each amino acid substitution occurring between clusters, a substitution frequency was recorded.
+    \item Finally, substitution scores were calculated using the log-odds scoring formula for each amino acid pair $i, j$:
+    
+    \begin{equation}
+    S(i, j) = \log \frac{P(i, j)}{P(i) \cdot P(j)}
+    \end{equation}
+    
+    Here, $P(i, j)$ represents the observed probability of amino acid $i$ substituting for $j$, while $P(i)$ and $P(j)$ are the background probabilities of each amino acid. Positive scores suggest substitutions are more likely than chance, while negative scores indicate disfavored substitutions.
+\end{enumerate}
+
+Different BLOSUM matrices, like BLOSUM45, BLOSUM62, and BLOSUM80, cater to different levels of similarity. Lower-numbered BLOSUM matrices are suited for analyzing distantly related sequences, as they capture broader evolutionary trends. Higher-numbered matrices are more appropriate for closely related sequences. Among them, BLOSUM62 has become widely used, as it provides a balanced approach suitable for a range of sequence alignment tasks, including use in algorithms like BLAST.
+
+PAM (Point Accepted Mutation) matrices, developed by Margaret Dayhoff and colleagues, take a different approach. Unlike BLOSUM, which is based on direct observations from protein blocks, PAM matrices are derived from a theoretical model of evolutionary change, focusing on closely related sequences. PAM1, the starting matrix, represents a 1\% divergence, meaning each amino acid has had a 1\% chance of mutating to another. Higher PAM matrices, like PAM250, are extrapolated from PAM1, estimating amino acid changes over more extended evolutionary periods.
+
+The key differences between BLOSUM and PAM lie in their methodologies and applications. BLOSUM matrices rely on observed data from conserved protein regions and do not involve extrapolation, making them ideal for identifying more distant relationships between proteins. Conversely, PAM matrices are modeled on evolutionary theory and use extrapolation, making them better suited for closely related sequences in global alignments. Thus, while BLOSUM is preferred for broader sequence similarity searches, PAM matrices find their application in evolutionary studies requiring a focus on closely related sequences.
+
+\section{Multiple Sequence Alignment}
+
