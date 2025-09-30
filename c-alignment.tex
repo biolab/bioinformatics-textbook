@@ -27,9 +27,11 @@ In dynamic programming, solutions to subproblems are stored (or "memorized") to 
 
 Protein substitution matrices are essential in bioinformatics, particularly for scoring alignments between protein sequences by assessing the likelihood of amino acid substitutions that may have occurred over time. BLOSUM (BLOcks SUbstitution Matrix), introduced by Henikoff and Henikoff in 1992, is among the most widely used matrices for this purpose. Derived from highly conserved protein regions, BLOSUM matrices help detect similarity between protein sequences by analyzing regions, or "blocks," that remain largely unchanged across members of protein families.
 
-The BLOSUM matrices
+
+
+The BLOSUM matrices were derived from data in the BLOCKS database, which contained about 500 conserved regions, or "blocks," from approximately 200 protein families.
 \marginpar{A protein family is a group of proteins that share a common evolutionary origin, often re\-flected in similar structures, functions, or sequence motifs.} 
-were derived from data in the BLOCKS database, which, at the time, contained approximately 500 blocks from around 200 protein families. Each block represented a conserved protein region with minimal variation, allowing researchers to focus on substitutions that occur in these stable regions. This made the BLOCKS database ideal for deriving substitution scores that reflect genuine evolutionary trends.
+Each block represented a stable, functionally important region within a protein family that has remained largely unchanged over evolutionary time. By focusing on these conserved regions with minimal variation, researchers could analyze meaningful substitutions that likely reflect evolutionary relationships. This made the BLOCKS database an ideal resource for deriving substitution scores that capture genuine evolutionary patterns.
 
 To create BLOSUM matrices, sequences within each block were grouped, or "clustered," according to a specific similarity threshold. Clustering in this context means that sequences within a block that share more than the specified percentage of similarity (e.g., 62\% for BLOSUM62) are grouped together as a single "cluster." Substitutions are then only counted between different clusters rather than within a cluster, reducing the influence of closely related sequences and emphasizing broader evolutionary changes. By capturing substitutions across clusters, BLOSUM matrices can better detect relationships in distantly related proteins.
 
@@ -83,5 +85,50 @@ PAM (Point Accepted Mutation) matrices, developed by Margaret Dayhoff and collea
 
 The key differences between BLOSUM and PAM lie in their methodologies and applications. BLOSUM matrices rely on observed data from conserved protein regions and do not involve extrapolation, making them ideal for identifying more distant relationships between proteins. Conversely, PAM matrices are modeled on evolutionary theory and use extrapolation, making them better suited for closely related sequences in global alignments. Thus, while BLOSUM is preferred for broader sequence similarity searches, PAM matrices find their application in evolutionary studies requiring a focus on closely related sequences.
 
+\section{Alignment with Affine Gaps}
+
+In {\em alignment with affine gap penalties}, affine refers to a type of gap penalty that includes both a fixed cost to open a gap and an additional cost for each position the gap is extended. Instead of charging the same amount for each gap position, this approach applies a smaller cost to extend an existing gap than to start a new one. A simpler way to describe this might be adjustable or two-part gap penalties, emphasizing that the penalty adjusts based on whether the gap is being opened or extended.
+
+\section{BLAST}
+
+BLAST (Basic Local Alignment Search Tool) identifies regions of similarity between sequences by comparing a query sequence to a database of known sequences. Unlike global alignment algorithms, which attempt to align entire sequences, BLAST uses \textit{local alignment}, focusing on finding high-similarity segments (subsequences) within larger sequences. This approach is computationally efficient and well-suited for detecting functional or evolutionary relationships across genomic and protein data.
+
+The BLAST algorithm works in three main phases: \textbf{seeding}, \textbf{extension}, and \textbf{evaluation}.
+
+\begin{enumerate}
+    \item \textbf{Seeding}: The algorithm first breaks down the query sequence into shorter words or "k-mers" of a fixed length (usually three residues for proteins, eleven for nucleotides). These k-mers are compared against all possible k-mers in the database. If the similarity between the query k-mer and a database k-mer meets a certain threshold score, it becomes a "seed" that may lead to a high-scoring alignment.
+    
+    \item \textbf{Extension}: For each seed match, BLAST extends the alignment in both directions, calculating a score for each extension by adding or subtracting points for matches, mismatches, and gaps based on a scoring matrix (e.g., BLOSUM for proteins, which gives positive scores to biologically likely substitutions). This process continues until the alignment score drops below a threshold, meaning no further extension would improve the alignment. The resulting segments, known as high-scoring segment pairs (HSPs), represent local regions of high similarity between the query and database sequence.
+    
+    \item \textbf{Evaluation and Ranking (E-value calculation)}: The significance of each HSP is assessed using a statistical measure called the \textit{E-value}, or "expect" value. The E-value estimates the number of alignments with a score equal to or greater than the observed score that could be expected by chance when searching a database of a given size. It’s calculated using the formula:
+
+    \[
+    E = K \times m \times n \times e^{-\lambda S}
+    \]
+
+    where:
+    \begin{itemize}
+        \item \( K \) and \( \lambda \) are statistical parameters dependent on the scoring system and sequence composition.
+        \item \( m \) and \( n \) are the lengths of the query and database sequences, respectively.
+        \item \( S \) is the raw alignment score of the HSP.
+    \end{itemize}
+
+    This formula is based on the extreme value distribution (EVD), which models the probability of obtaining an alignment score \( S \) by chance. Lower E-values indicate more significant alignments. For example, an E-value close to zero suggests the alignment is unlikely to be random, hinting at a meaningful biological relationship.
+\end{enumerate}
+
+By efficiently identifying and ranking local similarities, BLAST allows researchers to filter out biologically relevant hits from random alignments. Its computational efficiency and effectiveness have made it a cornerstone in bioinformatics, used for everything from annotating gene sequences to exploring evolutionary relationships.
+
+
 \section{Multiple Sequence Alignment}
 
+A popular technique and a software tool that implements a heuristic approach to multiple sequence alignment is CLUSTAL. 
+\marginpar{\raggedright Thompson JD, Higgins DG, Gibson TJ (1994) CLUSTAL W: improving the sensitivity of progressive multiple sequence alignment through sequence weighting, position-specific gap penalties and weight matrix choice. {\em Nucleic Acids Research} 22(22):4673–4680.}
+The term CLUSTAL derived from ``cluster alignment,'' reflecting the software's purpose of clustering and aligning multiple sequences. The name emphasizes its function in performing multiple sequence alignment by progressively clustering sequences based on their similarity. CLUSTAL works through a series of steps, typically following a progressive alignment approach:
+
+\begin{enumerate}
+\item \textbf{Pairwise Alignment}: First, CLUSTAL calculates pairwise alignment scores for all pairs of sequences using methods such as Needleman-Wunsch (for global alignment) or Smith-Waterman (for local alignment). These scores quantify how similar each sequence pair is.
+\item \textbf{Guide Tree Construction}: CLUSTAL then uses these pairwise alignment scores to build a guide tree, often by a method such as the neighbor-joining algorithm (more on this in the next chapter). This tree reflects the evolutionary relationships between sequences based on their similarity scores, determining the order in which sequences will be aligned.
+\item \textbf{Progressive Alignment}: Using the guide tree, CLUSTAL progressively aligns sequences from most to least similar, starting with closely related pairs and gradually aligning less similar ones. At each step, previously aligned groups are treated as single units or "profiles" to ensure consistency across the alignment.
+\end{enumerate}
+
+CLUSTAL also applies gap penalties to optimize the alignment, balancing between matching conserved regions and introducing gaps where needed to account for insertions or deletions. This progressive process ensures that gaps are added in a way that preserves the most conserved sequence regions.
