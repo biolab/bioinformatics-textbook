@@ -1,13 +1,17 @@
 \chapter{Introduction to Molecular Biology}
 \label{ch:intro-mol-biol}
 
-Bioinformatics applies the methods of computer science to the understanding of biology. Its goal is to uncover the processes that sustain life. Over the past few decades, biologists have developed tools and technologies to measure various aspects of biology and to study life at the molecular level. These data help us understand life at its most fundamental, molecular level and integrate this knowledge up to the level of organisms. As a computer engineer, you know that data requires storage, representation, and algorithms for analysis, visualization, and interpretation. In this course, we will look at bioinformatics as a tool for data analysis, focusing on methods that help biologists make sense of the vast amounts of data they can now collect.
+Bioinformatics \marginnote{The term \textit{bioinformatics} was first introduced in the 1970s by Dutch scientist Paulien Hogeweg, who used it to describe the study of information processes in biological systems. The field really took off in the 1990s with the Human Genome Project, when sequencing technologies began generating data at unprecedented scales.}
+applies the methods of computer science to the understanding of biology. 
+Its goal is to uncover the processes that sustain life. Over the past few decades, biologists have developed tools and technologies to measure various aspects of biology and to study life at the molecular level. These data help us understand life at its most fundamental, molecular level and integrate this knowledge up to the level of organisms. As a computer engineer, you know that data requires storage, representation, and algorithms for analysis, visualization, and interpretation. In this course, we will look at bioinformatics as a tool for data analysis, focusing on methods that help biologists make sense of the vast amounts of data they can now collect.
 
 But we have to start with biology. Specifically, molecular biology, the study of the molecular processes that sustain life. This chapter provides an introduction to molecular biology, focusing on the central dogma of molecular biology, the structure of DNA, and the processes of transcription and translation. We will introduce these concepts gradually, trying to impose some logic in understanding the complexity of life. Note, however, that life was not designed in this way, but arose by evolution and tinkering, i.e., improving upon existing solutions. This is why life is so complex and why we need to study it in a structured way.
 
 \section{Life}
 
-Life is a complex phenomenon that is difficult to define. It is characterized by a set of processes that allow organisms to grow, reproduce, and sustain themselves. These processes are governed by the laws of physics and chemistry, but life itself is more than the sum of its parts. It is a dynamic and evolving system that constantly adapts to its environment.
+Life is a complex phenomenon
+\marginnote{In 1944, physicist Erwin Schrödinger asked the question \textit{``What is life?''} in his famous book of the same title. His ideas about an ``aperiodic crystal'' carrying genetic information inspired many scientists, including Watson and Crick, to search for the molecular basis of heredity.}
+that is difficult to define. It is characterized by a set of processes that allow organisms to grow, reproduce, and sustain themselves. These processes are governed by the laws of physics and chemistry, but life itself is more than the sum of its parts. It is a dynamic and evolving system that constantly adapts to its environment.
 
 The study of life is known as biology. It is a broad field that encompasses many different disciplines, including genetics, ecology, and physiology. One of the central questions in biology is how life originated and evolved. This question has fascinated scientists for centuries and led to many important discoveries.
 
@@ -20,7 +24,9 @@ There are all kinds of living things on Earth, from the tiniest bacteria to the 
 % https://en.wikipedia.org/wiki/Cellular_compartment
 \end{figure}
 
-Oh, did we mention taxa? We did. Like computer scientists, biologists like to organize and classify entities of their study into groups and hierarchies. Taxonomy is the science of classifying living things into groups based on common characteristics. The basic unit of taxonomy is the species, which is a group of organisms that can interbreed and produce fertile offspring. Species are further grouped into genera, families, orders, classes, phyla, and kingdoms. The highest level of classification is the domain, which is based on molecular data and includes three groups: Bacteria, Archaea, and Eukarya. These domains are based on differences in the genetic material of organisms and reflect the evolutionary relationships between them.
+Oh, did we mention taxa? We did. Like computer scientists, biologists like to organize and classify entities of their study into groups and hierarchies. Taxonomy is the science of classifying living things into groups based on common characteristics. The basic unit of taxonomy is the species, which is a group of organisms that can interbreed and produce fertile offspring. Species are further grouped into genera, families, orders, classes, phyla, and kingdoms. The highest level of classification is the domain,
+\marginnote{The three-domain system (Bacteria, Archaea, Eukarya) was proposed by Carl Woese in 1977. Before this, most biology textbooks described life using a five-kingdom system (Monera, Protista, Fungi, Plantae, Animalia). Woese’s discovery showed that Archaea are as different from Bacteria as they are from Eukaryotes, reshaping our view of the tree of life.}
+which is based on molecular data and includes three groups: Bacteria, Archaea, and Eukarya. These domains are based on differences in the genetic material of organisms and reflect the evolutionary relationships between them.
 
 \begin{figure}
   \includegraphics[width=0.8\textwidth]{figs/molbiol/taxonomy.png}
@@ -36,7 +42,7 @@ Let's start by considering what defines something as living. Today we know that 
 
 \section{The Cell}
 
-Cells are the Basic Units of Life
+Cells are the basic units of life.
 \reversemarginpar
 \marginnote{The estimate of the number of cells in the human body comes from the study ``An estimation of the number of cells in the human body'' published by Bianconi et al. in the {\em Annals of Human Biology} (2013), which provides a comprehensive calculation of the number of cells in different tissues. The number is approximate, as it can vary depending on individual factors such as size and health.}
 \normalmarginpar
@@ -44,13 +50,17 @@ All living organisms consist of one or more cells. Cells are the building blocks
 
 Some organisms consist of a single cell, and we refer to them as single-celled organisms. Examples of single-celled organisms include bacteria, archaea, and protists. These organisms are capable of performing all the functions of life within a single cell. Single-celled organisms are the most abundant form of life on Earth and are found in almost every environment, from the deep sea to the soil to the human gut. They are of particular interest to biologists because a single cell can be easier to study than a complex organism with many cells. 
 
-Single-celled organisms are classified as either prokaryotes or eukaryotes. Prokaryotes are single-celled organisms that lack a defined nucleus or other membrane-bound organelles. They include bacteria and archaea. Eukaryotes are organisms that have a defined nucleus and membrane-bound organelles. Examples of unicellular eukaryotes include certain types of algae, protozoa, and fungi such as yeast. (More on the nucleus later.)
+Single-celled organisms 
+\marginnote{Baker’s yeast (\textit{Saccharomyces cerevisiae}) is a single-celled eukaryote. The same organism that makes bread rise is also a powerful model system in molecular biology — used to study cell division, genetics, and even aging.}
+are classified as either prokaryotes or eukaryotes. Prokaryotes are single-celled organisms that lack a defined nucleus or other membrane-bound organelles. They include bacteria and archaea. Eukaryotes are organisms that have a defined nucleus and membrane-bound organelles. Examples of unicellular eukaryotes include certain types of algae, protozoa, and fungi such as yeast. (More on the nucleus later.)
 
 Multicellular organisms are made up of many cells that work together. Humans, for example, are made up of \(6 \times 10^{13}\) cells. That's 60 trillion cells, or
 $$ 60,000,000,000,000 {\ \rm cells}. $$
 For comparison, there are about 300 billion stars in the Milky Way, so we have about 200 times more cells in our bodies than there are stars.
 
-Molecular biologists used to define cell types based on how they looked under the microscope, but now we can also define them based on their molecular characteristics, such as the genes they express. There is a special field of molecular biology called single-cell transcriptomics, which studies the gene expression of individual cells. This field has revolutionized our understanding of cell types and their functions. More about this later in the course.
+Molecular biologists used to define cell types based on how they looked under the microscope, but now we can also define them based on their molecular characteristics, such as the genes they express. There is a special field of molecular biology called single-cell transcriptomics, 
+\marginnote{Single-cell transcriptomics has even been used to map all the different cell types in the human body. The Human Cell Atlas project, started in 2016, aims to catalog every cell type — like a “Google Maps” of our cells.}
+which studies the gene expression of individual cells. This field has revolutionized our understanding of cell types and their functions. More about this later in the course.
 
 Figure~\ref{fig:cell} shows a diagram of a typical eukaryotic cell. Is it an animal or plant cell? What organelles can you identify? The cell is a complex structure with many different parts, each with a specific function. Some of the most important organelles in a eukaryotic cell are the nucleus, which contains the genetic material, the mitochondria, which produce the cell's energy, and the endoplasmic reticulum, which is involved in protein synthesis. Plant cells have some additional organelles, such as chloroplasts, which are involved in photosynthesis, and a large central vacuole, which stores water and nutrients.
 
@@ -63,7 +73,9 @@ Figure~\ref{fig:cell} shows a diagram of a typical eukaryotic cell. Is it an ani
 
 \section{Cells Die and Are Replaced}
 
-Cells in the human body are constantly dying and being replaced. Approximately 96 million cells die every minute as part of the natural process of cell turnover. The lifespan of a cell varies greatly depending on its type. For example, white blood cells typically survive for about 13 days, while epidermal skin cells last about a month. Red blood cells, which carry oxygen, have a lifespan of about 120 days. Liver cells, which are involved in vital metabolic processes, can live for about a year and a half before they are replaced. This continuous cycle of cell death and regeneration is essential for maintaining the health and function of the body.
+Cells in the human body are constantly dying and being replaced.
+\marginnote{The concept of programmed cell death, or apoptosis, was first described in 1972 by John Kerr, Andrew Wyllie, and Alastair Currie. This discovery showed that cells don’t just wear out, but can actively self-destruct in a controlled way — a process essential for development and health.}
+Approximately 96 million cells die every minute as part of the natural process of cell turnover. The lifespan of a cell varies greatly depending on its type. For example, white blood cells typically survive for about 13 days, while epidermal skin cells last about a month. Red blood cells, which carry oxygen, have a lifespan of about 120 days. Liver cells, which are involved in vital metabolic processes, can live for about a year and a half before they are replaced. This continuous cycle of cell death and regeneration is essential for maintaining the health and function of the body.
 
 
 \section{What Makes Up the Cell?}
@@ -78,7 +90,10 @@ Proteins are large, complex molecules that are essential to life and are involve
 
 Proteins are made up of long chains of amino acids linked together in a specific sequence. All organisms, with a few exceptions, use 20 amino acids that can be combined in various ways to produce diverse proteins. The sequence of amino acids in a protein determines its structure and function. Proteins range in size from 50 to 30,000 amino acids, with the average human protein containing about 300.
 
-Proteins have a complex three-dimensional structure that is critical to their function. A protein's structure is determined by its amino acid sequence and the interactions between the amino acids. Proteins can fold into specific shapes that allow them to interact with other molecules in the cell. Protein structure is described at four levels: primary (the amino acid sequence), secondary (local folding into helices or sheets), tertiary (the overall three-dimensional shape), and quaternary (the arrangement of multiple subunits into a larger complex).
+Proteins have a complex three-dimensional structure 
+that is critical to their function. A protein's structure is determined by its amino acid sequence and the interactions between the amino acids.
+\marginnote{The first protein to have its 3D structure determined was myoglobin, solved by John Kendrew in 1958 using X-ray crystallography. This breakthrough earned him a Nobel Prize and opened the way to structural biology, revealing how a protein’s shape underpins its function.}
+Proteins can fold into specific shapes that allow them to interact with other molecules in the cell. Protein structure is described at four levels: primary (the amino acid sequence), secondary (local folding into helices or sheets), tertiary (the overall three-dimensional shape), and quaternary (the arrangement of multiple subunits into a larger complex).
 
 For example, human insulin consists of 51 amino acids. The image in Fig.~\ref{fig:insulin-secondary} shows the secondary structure of human insulin. The primary structure of a protein is a sequence of amino acids that make up the molecule. In this figure, the amino acids are marked with circles containing a three-letter abbreviation. For example, the insulin chain begins with Met, which is an abbreviation for methionine. The secondary structure of a protein refers to local folding patterns, such as helices and sheets, which are important because they determine how the protein will fold into its three-dimensional shape.
 
@@ -146,7 +161,9 @@ The process of polymerization continues until the protein is complete, producing
 
 Metabolism is the set of chemical reactions that occur in living organisms to maintain life. These reactions are essential for the growth, development, and reproduction of organisms. Metabolism can be divided into two main categories: catabolism and anabolism. Catabolism refers to the breakdown of complex molecules into simpler ones, releasing energy in the process. Anabolism refers to the synthesis of complex molecules from simpler ones, requiring energy. Together, these processes balance cellular energy and enable the cell to function.
 
-Metabolism is regulated by enzymes, which are proteins that catalyze chemical reactions in the cell. Enzymes are highly specific, each catalyzing only one reaction. They can speed up reactions by a factor of up to a billion times.
+Metabolism is regulated by enzymes, 
+\marginnote{The term \textit{enzyme} was first used in 1878 by Wilhelm Kühne. Before that, many scientists thought fermentation was caused by a mysterious ``vital force.'' Enzymes showed that life’s chemistry could be explained by proteins.}
+which are proteins that catalyze chemical reactions in the cell. Enzymes are highly specific, each catalyzing only one reaction. They can speed up reactions by a factor of up to a billion times.
 
 Here is an example of a metabolic pathway: glycolysis. Glycolysis is the breakdown of glucose into pyruvate, a process that releases energy. As shown in Fig.~\ref{fig:glycolysis}, glycolysis is the first step in cellular respiration, which generates energy for the cell. The energy released is used to produce ATP, the cell's primary energy source.
 
@@ -168,7 +185,9 @@ Just for a taste, Fig.~\ref{fig:glycolysis} shows what hexokinase looks like (fi
 
 \section{Some More Surprising Facts}
 
-A typical protein is about 5 nm in size, while a typical eukaryotic cell is around 50 µm. The diameter of a cell is approximately 10,000 times larger than that of an average protein. Since volume scales with the cube of the diameter, the volume of the cell is roughly $10,000^3 = 10^{12}$ times larger than the volume of a typical protein.
+A typical protein is about 5 nm in size, 
+\marginnote{The idea that cells are made of countless smaller molecular machines only became clear in the mid-20th century, when biophysicists began combining X-ray crystallography, electron microscopy, and biochemistry to measure protein sizes.}
+while a typical eukaryotic cell is around 50 µm. The diameter of a cell is approximately 10,000 times larger than that of an average protein. Since volume scales with the cube of the diameter, the volume of the cell is roughly $10,000^3 = 10^{12}$ times larger than the volume of a typical protein.
 
 Incredibly, each cell contains around one billion protein molecules ($10^9$). This astonishing number highlights the immense molecular complexity of even a single cell.
 
@@ -190,7 +209,9 @@ So now we know that cells contain vast numbers of proteins—and that proteins a
 
 \section{The Central Dogma of Molecular Biology}
 
-The central dogma of molecular biology is a framework that describes the flow of genetic information in cells. It states that genetic information generally flows from DNA to RNA to protein. The central dogma is a fundamental principle of molecular biology and is essential for understanding how genetic information is stored, replicated, and expressed in living organisms.
+The central dogma 
+\marginnote{The phrase \textit{central dogma} was coined by Francis Crick in 1957. Interestingly, Crick admitted later that he did not fully know the meaning of ``dogma'' at the time — he just liked the sound of it.}
+of molecular biology is a framework that describes the flow of genetic information in cells. It states that genetic information generally flows from DNA to RNA to protein. The central dogma is a fundamental principle of molecular biology and is essential for understanding how genetic information is stored, replicated, and expressed in living organisms.
 
 In a nutshell, a discovery that took decades of research and earned numerous Nobel Prizes, the recipes for all the proteins involved in our lives are stored in a long molecule called DNA (Fig.~\ref{fig:dna-detail}), or deoxyribonucleic acid. In eukaryotes, DNA is tightly packed and stored in the nucleus of the cell. DNA is in the form of a double helix, with two complementary strands. Each strand is a chain of nucleotides attached to a sugar-phosphate backbone.
 
