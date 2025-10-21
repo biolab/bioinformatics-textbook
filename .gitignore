@@ -14,6 +14,9 @@
 
 ## Main pdf file
 main.pdf
+0*.pdf
+prompts.md
+copy-to-server
 
 ## Intermediate documents:
 *.dvi
