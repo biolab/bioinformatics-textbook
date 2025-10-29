@@ -1,4 +1,4 @@
-\chapter{Sequence Alignment}
+\chapter{Sequence Alignment Methods}
 \label{ch:alignment}
 
 Before we can understand how genes evolve and how their functions relate across organisms,  we must first learn how to compare biological sequences in a meaningful way.  The comparison of DNA, RNA, and protein sequences lies at the heart of modern bioinformatics, providing the basis for discovering evolutionary relationships, identifying functional regions, and annotating newly sequenced genomes. Sequence alignment is the systematic arrangement of sequences to reveal their similarities and differences. It serves as the foundation for nearly every computational analysis in molecular biology.
@@ -221,18 +221,17 @@ Given two biological sequences, our goal is to find the alignment that achieves 
 Formally, let $\mathcal{A}(s,t)$ denote the set of all possible alignments between sequences $s$ and $t$. 
 For any alignment $A \in \mathcal{A}(s,t)$, let $M(A)$ represent its alignment score. 
 The \emph{optimal alignment}, denoted by $A^*(s,t)$, is the alignment that maximizes the scoring function:
-
 \[
 A^*(s,t) = \arg\max_{A \in \mathcal{A}(s,t)} M(A),
 \qquad
 M(A^*) = \max_{A \in \mathcal{A}(s,t)} M(A),
 \]
-
+%
 so that for all possible alignments $A$,
+%
 \[
 M(A^*) \ge M(A).
 \]
-
 
 A key observation, stemming from our alignment walks above, is that an optimal alignment of two sequences can be built \emph{incrementally}. Suppose we have already computed the best possible alignment for the prefixes of the two sequences up to certain positions. When we extend these prefixes by one additional symbol (or introduce a gap), the best alignment for the longer prefixes can be obtained directly from these previously computed partial results. In other words, the problem exhibits an \emph{optimal substructure}: the optimal solution to the whole problem can be constructed from the optimal solutions to its smaller subproblems.
 
@@ -517,24 +516,120 @@ The traversal for finding the best alignment score now involves moving \emph{acr
     \label{f:affine-gap-traversal}
 \end{figure}
 
+\section{Multiple Sequence Alignment}
+
+Pairwise alignment methods, such as the Needleman–Wunsch and Smith–Waterman algorithms, form the basis of comparing two sequences optimally. However, many biological analyses require comparing whole families of sequences simultaneously. Extending these ideas to three or more sequences leads to the problem of multiple sequence alignment, which generalizes pairwise alignment but introduces new computational challenges. Such comparisons may consider different versions of a gene across species or members of a protein family within the same organism. To reveal regions that have remained similar over time and to understand how the sequences relate evolutionarily, we align all of them together in what is called a multiple sequence alignment. 
+
+A multiple sequence alignment arranges three or more sequences in a table so that symbols with a shared evolutionary origin appear in the same column. For example:
+%
+\begin{verbatim}
+s1: A T - G C A
+s2: A T G G - A
+s3: A T T G C A
+\end{verbatim}
+%
+This alignment highlights conserved positions (“A–T–G–A”) and regions that have changed through mutations, insertions, or deletions. 
+
+The Needleman--Wunsch algorithm can, in principle, be extended to align more than two sequences. Instead of filling a two-dimensional dynamic programming table, we would construct a table with one dimension for each sequence, where each cell represents the best alignment score for the corresponding prefixes of all sequences. For three sequences, this becomes a three-dimensional cube; for four, a four-dimensional hypercube, and so on. Each additional sequence therefore adds another dimension to the computation. The number of possible paths through this multidimensional table grows exponentially, requiring both time and memory on the order of $O(n^k)$, where $n$ is the sequence length and $k$ is the number of sequences. While this exact dynamic programming approach guarantees an optimal multiple sequence alignment, it quickly becomes impractical. As a result, nearly all practical methods rely on heuristics or approximations that trade exact optimality for tractable computation.
+
+Because exact multiple sequence alignment by dynamic programming is computationally infeasible for more than a few short sequences, practical methods rely on heuristics that approximate the optimal result. One of the most common strategies is progressive alignment. Instead of aligning all sequences at once, the algorithm builds the alignment step by step. First, all pairs of sequences are aligned to estimate their similarities, which are then used to construct a guide tree 
+\marginnote{The construction of the guide tree relies on pairwise sequence similarities and forms the basis for clustering algorithms such as \textit{neighbor joining}, which can infer phylogenetic relationships among sequences. We will explore these methods in a later chapter.}
+representing their approximate relationships. The two most similar sequences are aligned first, and the resulting alignment is treated as a single entity called a profile.  
+
+A profile summarizes each column of the current alignment by recording how often each nucleotide or amino acid appears there. When a new sequence is added, it is aligned against this profile rather than against individual sequences, choosing the placement that best matches the column frequencies. The process continues until all sequences have been incorporated.  
+
+For example, given three DNA sequences  
+\[
+\texttt{s}_1 = \texttt{ATGA}, \quad 
+\texttt{s}_2 = \texttt{ATGCA}, \quad 
+\texttt{s}_3 = \texttt{ATGGA},
+\]
+the algorithm might first align $\texttt{s}_1$ and $\texttt{s}_2$:
+\begin{verbatim}
+s1: A T G - A
+s2: A T G C A
+\end{verbatim}
+The resulting profile represents each column as a distribution of residues (for instance, the fourth column has 50\% gaps and 50\% C). The third sequence, $\texttt{s}_3$, is then aligned against this profile to produce the final multiple alignment.
+
+The quality of such an alignment is often measured by the \textbf{sum-of-pairs score}, which adds the scores of all pairwise comparisons implied by the alignment. Columns with matching or chemically similar residues contribute positively, while mismatches and gaps reduce the total.  
+
+An alternative, information-based measure uses \textbf{entropy} to quantify conservation within each column:
+\[
+H = -\sum_{i=1}^{k} p_i \log_2 p_i,
+\]
+where $p_i$ is the frequency of residue $i$ and $k$ is the alphabet size. A completely conserved column, where all sequences have the same residue, has $H = 0$; a highly variable one has higher entropy. For example, if 8 out of 10 residues in a column are A and 2 are G, then $H \approx 0.72$.  
+
+Low-entropy columns signal conserved, biologically important regions, while high-entropy columns mark variable positions. Together, these scoring schemes provide complementary ways to evaluate the quality of a multiple sequence alignment, balancing sequence similarity with biological relevance.
+
+Multiple sequence alignments provide the foundation for many downstream analyses in bioinformatics. They are used to identify conserved motifs that indicate important structural or functional sites, to build phylogenetic trees that reconstruct evolutionary relationships, and to generate profiles or hidden Markov models for sequence classification. High-quality alignments are thus critical inputs for comparative genomics, structural prediction, and protein family analysis.
+
+\section{A Note on Scoring Functions for Nucleotide Alignment}
+
+When aligning nucleotide sequences, the scoring function determines the numerical reward or penalty assigned to each possible pairing of nucleotides or gaps. The choice of scoring system has a strong influence on the resulting alignment, especially when gaps are present or when substitution biases exist in the data.
+
+The scoring function we have used above (match = +2, mismatch = -1, gap = -2) is a simple symmetric scheme that treats all nucleotide substitutions equally and applies a uniform penalty for gaps. It assumes that all substitutions and all gaps are equally costly.  While it may is sufficient for illustrating the mechanics of global or local alignment algorithms such as Needleman–Wunsch or Smith–Waterman, in biological data, however, substitutions between nucleotides are not all equally likely.  For instance, in DNA or RNA, the four bases (A, C, G, and T or U) exhibit a strong transition/transversion bias:
+
+\begin{itemize}
+    \item Transitions (A$\leftrightarrow$G and C$\leftrightarrow$T) occur more frequently,
+    \item Transversions (A$\leftrightarrow$C, A$\leftrightarrow$T, G$\leftrightarrow$C, G$\leftrightarrow$T) occur less frequently.
+\end{itemize}
+
+To reflect this bias, one can design a substitution matrix in which transitions are penalized less heavily than transversions. In scoring Table~\ref{tab:nt_substitution_matrix}, transitions (A$\leftrightarrow$G, C$\leftrightarrow$T) receive a penalty of $-0.5$, while transversions are penalized by $-1.5$.
+
+\begin{table}[htbp]
+\caption{Example of a nucleotide substitution matrix reflecting transition bias.}
+\label{tab:nt_substitution_matrix}
+\centering
+\begin{tabular}{c|rrrr}
+  & A & C & G & T \\
+  \hline
+  A & +1 & -1.5 & -0.5 & -1.5 \\
+  C & -1.5 & +1 & -1.5 & -0.5 \\
+  G & -0.5 & -1.5 & +1 & -1.5 \\
+  T & -1.5 & -0.5 & -1.5 & +1 \\
+\end{tabular}
+\end{table}
+
+More sophisticated scoring functions can be derived empirically.
+\marginnote{An alternative is to use explicit substitution models such as Kimura models that describe the evolutionary processes with parameters like the transition/transversion ratio and base frequencies. More on such models in later chapters.}
+For instance, from a large collection of trusted alignments, say, from a library of homologous sequences, one can estimate the joint probability $P(a,b)$ of observing nucleotides $a$ and $b$ aligned to each other.  The resulting log-odds score is
+\begin{equation}
+S(a,b) = \lambda \log \frac{P(a,b)}{P(a)P(b)},
+\end{equation}
+where $P(a)$ and $P(b)$ are background frequencies and $\lambda$ is a scaling constant.
+
+This is analogous to how PAM or BLOSUM matrices (see below) are derived for proteins, though in practice it is less common for DNA because of its smaller alphabet.
+
+There are, however, typical parameter choices for scoring function, depending on the application. Table~\ref{tab:typical_params} summarizes commonly used scoring systems for nucleotide sequence alignment.
+
+\begin{table}[h]
+\caption{Common scoring schemes for nucleotide alignment.}
+\label{tab:typical_params}
+\begin{tabular}{lccc}
+\toprule
+Purpose & Match & Mismatch & Gap penalty \\
+\midrule
+Didactic / simple & +2 & --1 & --2 per gap \\
+Stringent (identity) & +1 & --3 & --2 per gap  \\
+Transition-aware & +5 & --4 transition & --16 open \\
+& & --10 transversion & --4 extend \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Aligning Protein Sequences}
 
 All the examples above included alignments of nucleotide (DNA or RNA) sequences. This is often useful for studying genes and regulatory regions, whereas aligning of protein sequences can provide a deeper understanding of biological function and evolution. 
 
-Protein sequences evolve more slowly at the amino acid level than their corresponding nucleotide sequences. 
-since multiple codons can encode the same amino acid. As a result, proteins often retain detectable similarity 
-long after the underlying DNA sequences have diverged beyond recognition. Aligning protein sequences therefore 
-allows us to identify conserved structural and functional regions—such as catalytic sites, binding motifs, or 
-folding domains—that may be invisible in nucleotide-level comparisons.
+Protein sequences evolve more slowly at the amino acid level than their corresponding nucleotide sequences since multiple codons can encode the same amino acid. As a result, proteins often retain detectable similarity long after the underlying DNA sequences have diverged beyond recognition. Aligning protein sequences therefore allows us to identify conserved structural and functional regions—such as catalytic sites, binding motifs, or folding domains—that may be invisible in nucleotide-level comparisons.
 
-Protein alignments are especially valuable when comparing genes from different species (homology detection), 
-inferring evolutionary relationships, or annotating new genes based on known protein families. They are also 
-used in structural biology and drug discovery to predict the function of uncharacterized proteins or to 
-design mutations that alter activity or stability. Aligning protein sequences, however, introduces additional complexity: there are twenty amino acids rather than four nucleotides, and not all mismatches are equally likely or equally significant. To align proteins effectively, we must define an appropriate scoring mechanism that reflects biochemical and evolutionary relationships among amino acids.
+Protein alignments are especially valuable when comparing genes from different species (homology detection), inferring evolutionary relationships, or annotating new genes based on known protein families. They are also used in structural biology and drug discovery to predict the function of uncharacterized proteins or to design mutations that alter activity or stability. Aligning protein sequences, however, introduces additional complexity: there are twenty amino acids rather than four nucleotides, and not all mismatches are equally likely or equally significant. To align proteins effectively, we must define an appropriate scoring mechanism that reflects biochemical and evolutionary relationships among amino acids.
 
 \section{Protein Substitution Matrices}
 
-Protein substitution matrices are essential in bioinformatics, particularly for scoring alignments between protein sequences by assessing the likelihood of amino acid substitutions that may have occurred over time. BLOSUM (BLOcks SUbstitution Matrix), introduced by Henikoff and Henikoff in 1992, is among the most widely used matrices for this purpose. Derived from highly conserved protein regions, BLOSUM matrices help detect similarity between protein sequences by analyzing regions, or "blocks," that remain largely unchanged across members of protein families.
+Protein substitution matrices are essential in bioinformatics, particularly for scoring alignments between protein sequences by assessing the likelihood of amino acid substitutions that may have occurred over time. Among the most widely used of these is the BLOSUM (BLOcks SUbstitution Matrix),
+\marginnote{The BLOSUM matrices were introduced by Steven and Jorja Henikoff in 1992 in their paper ``Amino acid substitution matrices from protein blocks,'' published in \emph{Proceedings of the National Academy of Sciences of the USA} (PNAS).}
+which is derived from highly conserved regions, or “blocks,” of protein families. By analyzing these regions that remain largely unchanged across evolution, BLOSUM matrices help detect similarity between protein sequences and reveal functional or structural relationships.
 
 The BLOSUM matrices were derived from data in the BLOCKS database, which contained about 500 conserved regions, or "blocks," from approximately 200 protein families.
 \marginnote{A protein family is a group of proteins that share a common evolutionary origin, often re\-flected in similar structures, functions, or sequence motifs.} 
@@ -588,58 +683,8 @@ The process to derive a BLOSUM matrix involved several key steps:
 
 Different BLOSUM matrices, like BLOSUM45, BLOSUM62, and BLOSUM80, cater to different levels of similarity. Lower-numbered BLOSUM matrices are suited for analyzing distantly related sequences, as they capture broader evolutionary trends. Higher-numbered matrices are more appropriate for closely related sequences. Among them, BLOSUM62 has become widely used, as it provides a balanced approach suitable for a range of sequence alignment tasks, including use in algorithms like BLAST.
 
-PAM (Point Accepted Mutation) matrices, developed by Margaret Dayhoff and colleagues, take a different approach. Unlike BLOSUM, which is based on direct observations from protein blocks, PAM matrices are derived from a theoretical model of evolutionary change, focusing on closely related sequences. PAM1, the starting matrix, represents a 1\% divergence, meaning each amino acid has had a 1\% chance of mutating to another. Higher PAM matrices, like PAM250, are extrapolated from PAM1, estimating amino acid changes over more extended evolutionary periods.
+PAM (Point Accepted Mutation) matrices, developed by Margaret Dayhoff and colleagues, take a different approach. 
+\marginnote{PAM matrices were developed by Margaret O. Dayhoff and colleagues in the paper “A model of evolutionary change in proteins,” published in \emph{Atlas of Protein Sequence and Structure} (1978).}
+Unlike BLOSUM, which is based on direct observations from protein blocks, PAM matrices are derived from a theoretical model of evolutionary change, focusing on closely related sequences. PAM1, the starting matrix, represents a 1\% divergence, meaning each amino acid has had a 1\% chance of mutating to another. Higher PAM matrices, like PAM250, are extrapolated from PAM1, estimating amino acid changes over more extended evolutionary periods.
 
 The key differences between BLOSUM and PAM lie in their methodologies and applications. BLOSUM matrices rely on observed data from conserved protein regions and do not involve extrapolation, making them ideal for identifying more distant relationships between proteins. Conversely, PAM matrices are modeled on evolutionary theory and use extrapolation, making them better suited for closely related sequences in global alignments. Thus, while BLOSUM is preferred for broader sequence similarity searches, PAM matrices find their application in evolutionary studies requiring a focus on closely related sequences.
-
-\section{BLAST}
-
-BLAST (Basic Local Alignment Search Tool)
-\marginnote{BLAST was introduced by Altschul and colleagues in {\em Journal of Molecular Biology} (1990) and revolutionized bioinformatics by making large-scale sequence similarity searches both fast and practical.}
-identifies regions of similarity between sequences by comparing a query sequence to a database of known sequences. Unlike global alignment algorithms, which attempt to align entire sequences, BLAST uses local alignment, focusing on finding high-similarity segments (subsequences) within larger sequences. This approach is computationally efficient and well-suited for detecting functional or evolutionary relationships across genomic and protein data.
-
-The BLAST algorithm works in three main phases: \textbf{seeding}, \textbf{extension}, and \textbf{evaluation}.
-
-\begin{enumerate}
-    \item \textbf{Seeding}: The algorithm first breaks down the query sequence into shorter words or "k-mers" of a fixed length (usually three residues for proteins, eleven for nucleotides). These k-mers are compared against all possible k-mers in the database. If the similarity between the query k-mer and a database k-mer meets a certain threshold score, it becomes a "seed" that may lead to a high-scoring alignment.
-    
-    \item \textbf{Extension}: For each seed match, BLAST extends the alignment in both directions, calculating a score for each extension by adding or subtracting points for matches, mismatches, and gaps based on a scoring matrix (e.g., BLOSUM for proteins, which gives positive scores to biologically likely substitutions). This process continues until the alignment score drops below a threshold, meaning no further extension would improve the alignment. The resulting segments, known as high-scoring segment pairs (HSPs), represent local regions of high similarity between the query and database sequence.
-    
-    \item \textbf{Evaluation and Ranking (E-value calculation)}: The significance of each HSP is assessed using a statistical measure called the \textit{E-value}, or "expect" value. The E-value estimates the number of alignments with a score equal to or greater than the observed score that could be expected by chance when searching a database of a given size. It’s calculated using the formula:
-
-    \[
-    E = K \times m \times n \times e^{-\lambda S}
-    \]
-
-    where:
-    \begin{itemize}
-        \item \( K \) and \( \lambda \) are statistical parameters dependent on the scoring system and sequence composition.
-        \item \( m \) and \( n \) are the lengths of the query and database sequences, respectively.
-        \item \( S \) is the raw alignment score of the HSP.
-    \end{itemize}
-
-    This formula is based on the extreme value distribution (EVD), which models the probability of obtaining an alignment score \( S \) by chance. Lower E-values indicate more significant alignments. For example, an E-value close to zero suggests the alignment is unlikely to be random, hinting at a meaningful biological relationship.
-\end{enumerate}
-
-By efficiently identifying and ranking local similarities, BLAST allows researchers to filter out biologically relevant hits from random alignments. Its computational efficiency and effectiveness have made it a cornerstone in bioinformatics, used for everything from annotating gene sequences to exploring evolutionary relationships.
-
-
-\section{Multiple Sequence Alignment}
-
-A popular technique and a software tool that implements a heuristic approach to multiple sequence alignment is CLUSTAL. 
-\marginnote{CLUSTAL was introduced by Higgins and Sharp in {\em Computer Applications in the Biosciences} (1988), the journal that is now know as {\em Bioinformatics} and became one of the most widely used tools for multiple sequence alignment, setting the standard for comparative sequence analysis.}
-The term CLUSTAL derived from ``cluster alignment,'' reflecting the software's purpose of clustering and aligning multiple sequences. The name emphasizes its function in performing multiple sequence alignment by progressively clustering sequences based on their similarity. CLUSTAL works through a series of steps, typically following a progressive alignment approach:
-
-\begin{enumerate}
-\item \textbf{Pairwise Alignment}: First, CLUSTAL calculates pairwise alignment scores for all pairs of sequences using methods such as Needleman-Wunsch (for global alignment) or Smith-Waterman (for local alignment). These scores quantify how similar each sequence pair is.
-\item \textbf{Guide Tree Construction}: CLUSTAL then uses these pairwise alignment scores to build a guide tree, often by a method such as the neighbor-joining algorithm (more on this in the next chapter). This tree reflects the evolutionary relationships between sequences based on their similarity scores, determining the order in which sequences will be aligned.
-\item \textbf{Progressive Alignment}: Using the guide tree, CLUSTAL progressively aligns sequences from most to least similar, starting with closely related pairs and gradually aligning less similar ones. At each step, previously aligned groups are treated as single units or "profiles" to ensure consistency across the alignment.
-\end{enumerate}
-
-An important advancement came with \textbf{CLUSTAL W}.
-\marginnote{The CLUSTAL W algorithm ({\em Nucleic Acids Research}, 1994) greatly improved multiple sequence alignment through sequence weighting, position-specific gap penalties, and refined substitution matrices, setting a new benchmark for accuracy and robustness.}
-This version significantly improved alignment sensitivity by introducing sequence weighting, position-specific gap penalties, and flexible scoring matrices. These innovations made CLUSTAL W one of the most accurate and widely adopted tools for multiple sequence alignment and established the foundation for many modern alignment programs.
-
-\section{What's Next?}
-
-From alignments, we move toward the broader picture of evolution. Once we can align sequences and quantify their similarity, we can begin to ask deeper questions: Which genes share common ancestry? How closely related are different species? And how can we represent these relationships visually? In the next chapter, we will build on the foundations of sequence alignment to group similar sequences through clustering, reconstruct evolutionary trees using algorithms such as neighbor joining, and visualize these results to reveal patterns of divergence and common origin. In doing so, we will transform raw sequence data into a map of life's history—an evolutionary network connecting genes, proteins, and species.
