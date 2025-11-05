@@ -24,6 +24,7 @@ chapter_names = [
     "04-genes.pdf",
     "05-alignment-m.pdf",
     "06-alignment-t.pdf",
+    "07-filogeny.pdf"
 ]
 
 

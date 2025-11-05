@@ -4,10 +4,10 @@
 \usepackage{hyphenat}
 \usepackage{url}
 \usepackage{amsmath}
-\usepackage[backend=biber, natbib=true, style=numeric]{biblatex}
-\addbibresource{main.bib}
+% \usepackage[backend=biber, natbib=true, style=numeric]{biblatex}
+% \addbibresource{main.bib}
 \usepackage{xargs}
-\renewcommandx{\cite}[3][1={0pt},2={}]{\sidenote[][#1]{\fullcite[#2]{#3}}}
+% \renewcommandx{\cite}[3][1={0pt},2={}]{\sidenote[][#1]{\fullcite[#2]{#3}}}
 
 \title{Introduction to \\ Bioinformatics}
 \date{First Edition}
@@ -141,8 +141,10 @@
 \newcommand{\doccounter}[1]{\texttt{#1}\index{#1 counter@\texttt{#1} counter}}
 
 % Generates the index
-\usepackage{makeidx}
-\makeindex
+% \usepackage{makeidx}
+% \makeindex
+% Define \index as no-op if makeidx is not used
+\providecommand{\index}[1]{}
 
 %%%% Kevin Godny's code for title page and contents from https://groups.google.com/forum/#!topic/tufte-latex/ujdzrktC1BQ
 \makeatletter
@@ -196,6 +198,9 @@
 \usepackage{multirow}
 \usepackage{array}
 
+% Allow flexible page heights to avoid underfull vbox warnings
+\raggedbottom
+
 \begin{document}
 
 % Front matter
@@ -235,24 +240,23 @@ In recent years, biotechnology has advanced to the point where laboratories worl
 
 In this course, we aim to equip students with the tools and knowledge necessary to address the challenges posed by this influx of biological data. Through the use of algorithms, models, and computational strategies, students will be able to derive meaningful insights. As biological research increasingly relies on large-scale data analysis, skills in statistics, data visualization, and machine learning are critical. Statistical methods help extract meaningful patterns from noisy data, while machine learning and artificial intelligence provide powerful techniques for predictive modeling and pattern recognition. Data visualization is key to interpreting complex datasets, allowing scientists to effectively explore trends and relationships. By integrating these approaches, this book and course prepare readers to navigate the computational landscape of modern biology and contribute to cutting-edge bioinformatics research.
 
-%%
-% Start the main matter (normal chapters)
 \mainmatter
 
 \part{Molecular Biology}
 \input{c-molbio.tex}
 \input{c-history.tex}
+
+\part{Sequence Analysis}
 \input{c-genome.tex}
 \input{c-genes.tex}
 \input{c-alignment-m.tex}
 \input{c-alignment-t.tex}
+\input{c-filogeny.tex}
 
 \backmatter
 
 % \bibliography{main}
 % \bibliographystyle{plainnat}
-
-
-\printindex
+% \printindex
 
 \end{document}

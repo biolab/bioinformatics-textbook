@@ -1,0 +1,457 @@
+\chapter{Phylogenetic Trees}
+\label{ch:phylogeny}
+
+Phylogenetics is the study of evolutionary history and relationships among organisms. It seeks to reconstruct how species, genes, or populations diverged from common ancestors, forming the tree of life. From the earliest days of natural history (Fig.~\ref{f:darwin-tree}), biologists have sought to classify living forms and understand their relationships. Before the era of molecular biology, these efforts relied on observable features of organisms, such as morphology, anatomy, and physiology. With these data, scientists built hierarchical systems of classification, grouping organisms by shared traits that were presumed to reflect common ancestry.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figs/phylogeny/darwin_tree.jpg}
+    \caption{Charles Darwin’s ``I think'' sketch (1837), the first known diagrammatic representation of a phylogenetic tree. Drawn in his \emph{Notebook B}, it captures the idea that all species descend from common ancestors through branching evolution, a concept that became central to modern evolutionary biology.}
+    \label{f:darwin-tree}
+\end{figure}
+
+The motivation for studying phylogeny extends beyond taxonomy. Understanding evolutionary relationships provides crucial insights into how traits and functions evolved, how pathogens and their hosts co-evolve, and how genetic variation shapes adaptation. In medicine, for example, phylogenetic analyses help trace the origin and spread of infectious diseases, identify reservoirs of emerging pathogens, and guide vaccine development by revealing evolutionary patterns in viral genomes.
+
+Phylogenetic inference can draw on many types of data. Historically, biologists compared:
+
+\begin{itemize}
+    \item \emph{Morphological traits}, such as body shape, bone structure, or organ systems;
+    \item \emph{Quantitative traits}, such as size, weight, or other measurable features;
+    \item \emph{Physiological or behavioral traits}, including metabolic rates, temperature tolerance, or mating behavior.
+\end{itemize}
+
+These observable characteristics, though valuable, often reflect both genetic and environmental influences, which can obscure true evolutionary relationships. As a result, early phylogenies based purely on morphology were sometimes inconsistent or simply wrong.
+
+The advent of molecular biology transformed the field. Modern \emph{molecular phylogenetics} reconstructs evolutionary relationships using genetic data that includes DNA, RNA, or protein sequences. Because sequences carry information inherited from common ancestors, they offer a direct record of evolutionary history. Conserved genes, which change slowly over time, are particularly useful for comparing distant species, while rapidly evolving regions reveal recent divergences among closely related taxa.
+
+In this chapter, we focus on methods that infer phylogenetic trees from molecular data. We assume that sequence alignments have been performed and that measures of similarity or distance between sequences are available. Using these distances, we will introduce two classical approaches for tree reconstruction: the \emph{Unweighted Pair Group Method with Arithmetic Mean} (UPGMA) and the \emph{Neighbor Joining} method.
+
+\section{Phylogenetic Trees}
+
+A phylogenetic tree (\eg Fig.~\ref{f:bird-tree}) is a central concept in evolutionary biology. It is a model that represents the inferred evolutionary relationships among a set of organisms or genes. It provides a structured way to visualize how groups of organisms, known as taxa, are related through common ancestry. Each branch in the tree represents a lineage that diverges over time, accumulating genetic changes that lead to the diversity of life we observe today.
+
+\begin{marginfigure}
+    \centering{\includegraphics{figs/phylogeny/tree-elements.png}}
+    \caption[6pt]{Elements of a phylogenetic tree.}
+    \label{f:tree-elements}
+\end{marginfigure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figs/phylogeny/bird-tree.png}
+    \caption{A part of a phylogenetic tree of pelecaniformes from osteological data, as published in Smith ND in {\em PLOS One} (2010).}
+    \label{f:bird-tree}
+\end{figure}
+
+Let us start with some terminology. A \emph{taxon} (plural: \emph{taxa}) refers to any group of one or more organisms that a taxonomist considers to form a unit. A taxon may represent a species, a genus, a family, or a higher-level grouping such as a phylum. The scientific discipline concerned with identifying, naming, and classifying organisms—both living and extinct—is called \emph{taxonomy}. It provides the hierarchical framework within which phylogenetic relationships are interpreted.
+
+In a phylogenetic tree, the \emph{leaves} (or terminal nodes) correspond to known, extant taxa, while the \emph{internal nodes} represent inferred ancestral taxa that no longer exist. The \emph{branches} connecting these nodes trace the evolutionary pathways linking ancestors and descendants. In most such representations, the length of a branch is assumed to be proportional to evolutionary time or to the number of accumulated mutations, reflecting the concept of \emph{evolutionary distance}. This assumption implies that mutations occur at a constant rate along all lineages—a simplifying but often useful approximation known as the \emph{molecular clock hypothesis}. While real evolutionary processes may deviate from a perfectly constant rate, this assumption allows us to translate genetic differences into temporal relationships.
+
+Phylogenetic trees can take different forms depending on the data and assumptions (Fig.~\ref{f:tree-types}). In a \emph{binary tree}, each internal node gives rise to exactly two descendant branches, representing a series of bifurcations in evolutionary history. Binary trees are rooted, meaning they have a common ancestor at the root. In contrast, an \emph{unrooted tree} depicts relationships among taxa without specifying a common ancestor or a direction of evolution.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figs/phylogeny/tree-rooted.png}
+    \hfill
+    \includegraphics[width=0.50\textwidth]{figs/phylogeny/tree-unrooted.png}
+    \caption{Rooted (left) and unrooted tree (right).}
+    \label{f:tree-types}
+\end{figure}
+
+
+\section{Phylogenetic Trees as Models}
+
+To construct a phylogenetic tree from molecular data, we begin with a set of pairwise distances between taxa, denoted by $d_{ij}$ for taxa $\tau_i$ and $\tau_j$. These distances are obtained from aligned genetic sequences and depend on the type of sequence, alignment method, and scoring matrix. From alignments, we estimate the number of substitutions or mutations, possibly applying correction models (such as Jukes–Cantor, discussed later) to account for multiple substitutions at the same site.
+
+A phylogenetic tree provides a model that explains these pairwise distances. If the distances are \emph{additive}, the distance between any two taxa equals the sum of branch lengths connecting them. Thus, theoretical distances can be computed directly from the tree and compared with those derived from sequence data.
+
+For example, consider the unrooted tree in Figure~\ref{f:tree-distances}, with branch lengths representing evolutionary distances. The corresponding model distances are:
+
+
+\[
+\begin{array}{c|ccc}
+  & \tau_B & \tau_C & \tau_D \\
+\hline
+\tau_A & 4 & 5 & 6 \\
+\tau_B &   & 3 & 4 \\
+\tau_C &   &   & 3 \\
+\end{array}
+\]
+
+\begin{marginfigure}
+    \centering{\includegraphics{figs/phylogeny/tree-distances.png}}
+    \caption[6pt]{An example tree with edges labeled with distances.}
+    \label{f:tree-distances}
+\end{marginfigure}
+
+Ideally, these model distances should match those inferred from the aligned sequences. The problem of tree reconstruction is therefore to find the topology and branch lengths such that the modeled distances best approximate the observed ones.
+
+In principle, construction of the phylogenetic tree is an optimization task, where we aim to minimize the discrepancy between observed and expected distances. Since the number of possible tree topologies grows exponentially with the number of taxa, exhaustive search is infeasible. Practical methods, such as those introduced later in this chapter, use heuristic, hill-climbing approaches that iteratively improve the fit between model and data without guaranteeing a global optimum.
+
+
+\section{Unweighted Pair Group Method with Arithmetic Mean}
+
+UPGMA starts with each taxon as its own group and repeatedly merges the two groups with the smallest distance (or highest similarity) until a single group remains. It is identical to hierarchical clustering with average linkage, where for two groups of taxa $G_i$ and $G_j$ the intergroup distance is
+\[
+D(G_i,G_j)=\frac{1}{|G_i|\,|G_j|}\sum_{p\in G_i}\sum_{q\in G_j} d_{pq}.
+\]
+After merging $G_i$ and $G_j$ into $G_k=G_i\cup G_j$, distances to any other group $G_\ell$ are updated by the size–weighted average
+\[
+D(G_k,G_\ell)=\frac{|G_i|\,D(G_i,G_\ell)+|G_j|\,D(G_j,G_\ell)}{|G_i|+|G_j|}.
+\]
+UPGMA produces an ultrametric tree, a special kind of phylogenetic tree in which all paths from the root to any leaf have equal total length.
+That means all taxa are equally distant from their common ancestor, implying a constant rate of evolution.
+
+\section{UPGMA: a worked example}
+
+Start with the pairwise distances among taxa $\tau_A,\tau_B,\tau_C,\tau_D$:
+\[
+\begin{array}{c|ccc}
+ & \tau_B & \tau_C & \tau_D\\
+\hline
+\tau_A & 4 & 5 & 6\\
+\tau_B &   & 3 & 4\\
+\tau_C &   &   & 3
+\end{array}
+\]
+
+\paragraph{Step 1: merge $\tau_C$ and $\tau_D$.}
+The minimum distance is $d_{CD}=3$, so merge $G_E=\{\tau_C,\tau_D\}$. Update distances:
+\[
+\begin{aligned}
+D(\tau_A,G_E) &= \tfrac{1}{2}(d_{AC}+d_{AD}) = \tfrac{5+6}{2} = 5.5,\\
+D(\tau_B,G_E) &= \tfrac{1}{2}(d_{BC}+d_{BD}) = \tfrac{3+4}{2} = 3.5.
+\end{aligned}
+\]
+
+The new distance matrix is:
+\[
+\begin{array}{c|cc}
+ & \tau_B & G_E\\
+\hline
+\tau_A & 4 & 5.5\\
+\tau_B &   & 3.5
+\end{array}
+\]
+
+\paragraph{Step 2: merge $\tau_B$ and $G_E$.}
+The minimum is $3.5$, so merge $G_F=\{\tau_B,\tau_C,\tau_D\}$. Update the distance to $\tau_A$ (sizes: $|\{\tau_B\}|=1$, $|G_E|=2$):
+\[
+D(\tau_A,G_F)=\frac{1\cdot D(\tau_A,\tau_B)+2\cdot D(\tau_A,G_E)}{1+2}
+=\frac{4+2\cdot 5.5}{3}=\frac{15}{3}=5.
+\]
+
+The final distance matrix is:
+\[
+\begin{array}{c|c}
+ & G_F\\
+\hline
+\tau_A & 5
+\end{array}
+\]
+
+The procedure discribed above yields an ultrametric tree with merges at distances 3, 3.5, and 5, as shown in Figure~\ref{f:tree-upgma}.
+
+\begin{marginfigure}
+    \centering
+    \includegraphics{figs/phylogeny/tree-upgma.png}
+    \caption{UPGMA tree from our worked-out example.}
+    \label{f:tree-upgma}
+\end{marginfigure}
+
+
+\section{Problems with UPGMA}
+
+UPGMA has several limitations:
+
+\begin{itemize}
+  \item All taxa are placed at the same present time, that is, leaves are aligned at time $0$ (Fig.~\ref{f:taxa-at-same-time}).
+  \item It assumes a strict molecular clock (substitutions accumulate at a constant rate along all lineages).
+  \item The fitted ultrametric tree need not be faithful to the input distances.
+\end{itemize}
+
+\begin{marginfigure}
+    \centering
+    \includegraphics{figs/phylogeny/taxa-at-same-time.png}
+    \caption{In ultrametric trees, all taxa are placed at the same present time (leaves aligned at time $0$).}
+    \label{f:taxa-at-same-time}
+\end{marginfigure}
+
+To see the lack of faithfulness, compare observed and model-implied distances. 
+From the UPGMA tree in Figure~\ref{f:tree-distances}, the path between $\tau_A$ and $\tau_B$ has two branches of length $2.5$, so the estimated distance is
+\[
+\hat d_{AB}=2.5+2.5=5,
+\]
+whereas the observed $d_{AB}$ from the data is $4$.
+
+\begin{marginfigure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/phylogeny/ultrametric.png}
+    \caption{The ultrametric condition, graphically.}
+    \label{f:ultrametric}
+\end{marginfigure}
+
+A useful diagnostic is the ultrametric condition (Fig.~\ref{f:ultrametric}). For any triplet $\{\tau_i,\tau_j,\tau_k\}$, the distances are ultrametric iff the two largest values among $\{d_{ij},d_{ik},d_{jk}\}$ are equal and the third is less than or equal to them (equivalently, the strong triangle inequality $d_{ij}\le\max(d_{ik},d_{jk})$ with the maximum attained at least twice). In our example,
+\[
+d_{AB}=4,\quad d_{AC}=5,\quad d_{BC}=3,
+\]
+the two largest distances ($5$ and $4$) are not equal, so the data are not ultrametric. Hence no UPGMA (ultrametric) tree can be perfectly faithful to these input distances; the algorithm necessarily distorts some values to enforce ultrametricity.
+
+
+\section{Neighbor Joining Algorithm}
+
+Neighbor joining (NJ) is a bottom–up, agglomerative method for constructing phylogenetic trees from a distance matrix. Unlike UPGMA, NJ does not assume an ultrametric clock; it seeks a tree whose additive path lengths best match the observed distances.
+
+Let $D=(d_{ij})$ be the current distance matrix among our investigated taxa $\{\tau_1,\dots,\tau_n\}$. In the NJ algorithm, the matrix $Q$ is a transformed version of the distance matrix $D$ used to decide which pair of taxa to join next.
+\marginnote{\raggedright Introduced by Naruya Saitou and Masatoshi Nei in 1987 (\emph{Mol. Biol. Evol.} 4:406–425). The $Q$-matrix correction made neighbor joining robust to unequal evolutionary rates. Its algebraic form was so unexpectedly effective that early researchers jokingly called it ``black magic.''}
+It corrects for the overall divergence of each taxon from all others, reducing the risk of joining pairs that appear close to each other merely because they are both distant from the remaining taxa. Formally,
+\[
+Q(\tau_i,\tau_j) = (n-2)d_{ij} - R_i - R_j,
+\qquad
+R_i = \sum_{k=1}^{n} d_{ik}.
+\]
+where $d_{ij}$ is the observed distance between taxa $\tau_i$ and $\tau_j$, while $R_i$ and $R_j$ are the total distances of $\tau_i$ and $\tau_j$ to all other taxa, reflecting their overall separation in the dataset.
+
+A note on the equation above is in order. The factor $(n-2)$ arises from the algebraic derivation of neighbor joining as a method that minimizes the total branch length of the tree. Each distance $d_{ij}$ contributes to connections with the remaining $n-2$ taxa, so the term $(n-2)d_{ij}$ balances this contribution against the overall divergences $R_i$ and $R_j$. It serves as a normalization ensuring that pair selection remains consistent as the number of taxa decreases.
+
+The $Q$-matrix values are not distances themselves but \emph{criteria} indicating how suitable each pair is for joining. The pair $(\tau_i,\tau_j)$ with the smallest $Q(\tau_i,\tau_j)$ is selected for merging, since minimizing $Q$ tends to minimize the total branch length of the inferred additive tree.
+
+Construction of the tree by neighbour joining starts from a star topology. Initially, all taxa are attached to a central node. At each iteration it joins a pair $(\tau_i,\tau_j)$ into a new internal node $v$ (Fig.~\ref{f:nj-step}), computes branch lengths $L_{\tau_i v}$ and $L_{\tau_j v}$, and replaces $\tau_i,\tau_j$ by $v$ in the matrix. Distances from $v$ to remaining taxa are then updated and the process repeats.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figs/phylogeny/nj-step.png}
+    \caption{A single step of the NJ algorithm. Just the nodes connected to the center of the star are shown.}
+    \label{f:nj-step}
+\end{figure}
+
+
+\begin{marginfigure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/phylogeny/three-point.png}
+    \caption{The topology for the derivation of the three-point formula.}
+    \label{f:three-point}
+\end{marginfigure}
+
+To compute the distances between newly introduced node $v$ and all other taxa, we use the three-point formula. Consider the case of three taxa $\tau_A,\tau_B,\tau_C$ attached to a central node $Z$ (Fig.~\ref{f:three-point}) with limb lengths $L_x,L_y,L_z$, the observed distances satisfy
+\[
+\begin{aligned}
+L_x + L_y &= d_{AB},\\
+L_x + L_z &= d_{AC},\\
+L_y + L_z &= d_{BC}.
+\end{aligned}
+\]
+We can subtract $d_{AB}$ from $d_{AC}$ to get $L_z-L_y=d_{AC}-d_{AB}$, then add $L_y+L_z=d_{BC}$ to obtain
+\[
+\begin{aligned}
+L_y &= \tfrac{1}{2}\bigl(d_{AB}+d_{BC}-d_{AC}\bigr),\\
+L_x &= \tfrac{1}{2}\bigl(d_{AB}+d_{AC}-d_{BC}\bigr),\\
+L_z &= \tfrac{1}{2}\bigl(d_{AC}+d_{BC}-d_{AB}\bigr).
+\end{aligned}
+\]
+
+In general, for joining $(\tau_i,\tau_j)$, distances from the new node $v$ to any other $\tau_k$ follow
+\[
+d_{vk}=\tfrac{1}{2}\bigl(d_{ik}+d_{jk}-d_{ij}\bigr).
+\]
+
+Branch lengths for the joined pair are then computed as follows. Using the $Q$-selection and the row sums $R_i,R_j$,
+\[
+L_{\tau_i v}=\tfrac{1}{2}d_{ij}+\frac{R_i-R_j}{2(n-2)},\qquad
+L_{\tau_j v}=d_{ij}-L_{\tau_i v}.
+\]
+
+We now have all the ingredients to describe the NJ algorithm:
+\begin{enumerate}
+  \item {\bf Initialization.} Assume a star topology over $\{\tau_1,\dots,\tau_n\}$; set $D^{(0)}=D$.
+  \item {\bf Select neighbors.} For current $D^{(t)}$ with $n_t$ taxa, compute $R_i=\sum_k d_{ik}$ and the matrix $Q(\tau_i,\tau_j)=(n_t-2)d_{ij}-R_i-R_j$. Choose the pair $(\tau_i,\tau_j)$ with the smallest $Q$ (we use $Q$ rather than raw $d_{ij}$ to correct for overall proximity to the rest).
+  \item {\bf Create a new node and update distances.}
+    \begin{enumerate}
+      \item Introduce a new node $v$ joining $\tau_i,\tau_j$ with branch lengths
+      \[
+      L_{\tau_i v}=\tfrac{1}{2}d_{ij}+\frac{R_i-R_j}{2(n_t-2)},\qquad
+      L_{\tau_j v}=d_{ij}-L_{\tau_i v}.
+      \]
+      \item For every remaining $\tau_k$, set
+      \[
+      d_{vk}=\tfrac{1}{2}\bigl(d_{ik}+d_{jk}-d_{ij}\bigr).
+      \]
+      \item Form the reduced matrix by replacing $\tau_i,\tau_j$ with $v$.
+    \end{enumerate}
+  \item {\bf Iterate.} If more than two taxa remain, return to Step 2; otherwise connect the last two nodes and assign the final branch length by their remaining distance.
+\end{enumerate}
+NJ thus iteratively identifies neighbors in the additive sense, computes edge lengths via the three-point formula, and builds a tree consistent with the observed distances without enforcing a molecular clock.
+
+
+\section{Neighbor Joining: an Example}
+
+{\bf Data.} Consider the distance matrix $D=(d_{ij})$ for taxa $a,b,c,d,e$, with row sums $R_i=\sum_j d_{ij}$ shown at right:
+\[
+\begin{array}{c|ccccc|c}
+   & a & b & c & d & e & R_i\\
+\hline
+a & 0 & 17 & 21 & 31 & 23 & 92\\
+b & 17 & 0 & 30 & 34 & 21 & 102\\
+c & 21 & 30 & 0 & 28 & 39 & 118\\
+d & 31 & 34 & 28 & 0 & 43 & 136\\
+e & 23 & 21 & 39 & 43 & 0 & 126\\
+\end{array}
+\]
+
+\vspace{1em}\noindent {\bf Initial topology.} We start with $n=5$ taxa all attached to a central node, as shown in Figure~\ref{f:nj-initial}.
+
+\begin{marginfigure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figs/phylogeny/nj-initial.png}
+    \caption{The initial star topology for the NJ algorithm.}
+    \label{f:nj-initial}
+\end{marginfigure}
+
+\vspace{1em}\noindent {\bf Step 1: the first join.} With $n=5$, we compute the neighbour joining matrix $Q$ with $Q(i,j)=(n-2)d_{ij}-R_i-R_j=3d_{ij}-R_i-R_j$:
+\[
+\begin{array}{c|ccccc}
+   & b & c & d & e\\
+\hline
+a  & -143 & -147 & -135 & -149\\
+b  & & -130 & -136 & -165\\
+c  & & & \mathbf{-170} & -127\\
+d  & & & & -133\\
+\end{array}
+\]
+The smallest entry in this matrixis $Q(c,d)=-170$, so in the first step we join $c$ and $d$ into a new node $u$. Resulting tree topology is shown in Figure~\ref{f:nj-step1}.
+
+\begin{marginfigure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{figs/phylogeny/nj-step1.png}
+    \caption{The tree topology after the first step of the NJ algorithm.}
+    \label{f:nj-step1}
+\end{marginfigure}
+
+We now need to compute the branch lengths for the joined pair $u=(c,d)$ to the nodes $c$ and $d$. With $d_{cd}=28$, $R_c=118$, $R_d=136$, and $n=5$, we get:
+\[
+\begin{aligned}
+L_{cu} &= \tfrac{1}{2}d_{cd} + \frac{R_c - R_d}{2(n-2)} = \tfrac{28}{2} + \frac{-18}{6} = 11,\\
+L_{du} &= d_{cd} - L_{cu} = 17.
+\end{aligned}
+\]
+
+In order to continue with joining, we have to update the distances from the new node $u$ to the remaining taxa. For each remaining taxon $k\in\{a,b,e\}$, we compute:
+\[
+\begin{aligned}
+d_{uk} &= \tfrac{1}{2}\bigl(d_{ck} + d_{dk} - d_{cd}\bigr),
+\end{aligned}
+\]
+giving $d_{ua}=12$, $d_{ub}=18$, and $d_{ue}=27$. The reduced matrix on $\{a,b,e,u\}$ is as follows, where we have also added the column for the row sums $R_i$:
+\[
+\begin{array}{c|cccc|c}
+   & a & b & e & u & R_i\\
+\hline
+a & 0 & 17 & 23 & 12 & 52\\
+b & 17 & 0 & 21 & 18 & 56\\
+e & 23 & 21 & 0 & 27 & 71\\
+u & 12 & 18 & 27 & 0 & 57\\
+\end{array}
+\]
+
+\vspace{1em}\noindent {\bf Step 2: the second join.} We are now ready to repeat the process. With $n=4$, we compute the $Q(i,j)=2d_{ij}-R_i-R_j$. The adjusted distance matrix is:
+\[
+\begin{array}{c|cccc}
+   & b & e & u\\
+\hline
+a & -74 & -77 & \mathbf{-85}\\
+b &     & \mathbf{-85} & -77\\
+e &     &              & -74\\
+\end{array}
+\]
+The smallest values tie at $Q(a,u)=-85$ and $Q(b,e)=-85$. We resolve the tie arbitrarily by joining $(b,e)$ into a new node $v$ (Fig.~\ref{f:nj-step2}). The lengths of the new branches are:
+\[
+\begin{aligned}
+L_{bv} &= \tfrac{1}{2}d_{be} + \frac{R_b - R_e}{2(n-2)} = \frac{21}{2} + \frac{56 - 71}{4} = 6.75,\\
+L_{ev} &= d_{be} - L_{bv} = 21 - 6.75 = 14.25.
+\end{aligned}
+\]
+
+\begin{marginfigure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{figs/phylogeny/nj-step2.png}
+    \caption{The tree topology after the second step of the NJ algorithm, where we just joined $b$ and $e$ into $v$.}
+    \label{f:nj-step2}
+\end{marginfigure}
+
+We now need to compute the distances to the new node $v$:
+\[
+\begin{aligned}
+d_{av} &= \tfrac{1}{2}(d_{ab} + d_{ae} - d_{be}) = \tfrac{1}{2}(17 + 23 - 21) = 9.5,\\
+d_{uv} &= \tfrac{1}{2}(d_{ub} + d_{ue} - d_{be}) = \tfrac{1}{2}(18 + 27 - 21) = 12.
+\end{aligned}
+\]
+
+The resulting distance matrix is:
+\[
+\begin{array}{c|ccc}
+   & a & u & v\\
+\hline
+a & 0 & 12 & 9.5\\
+u & 12 & 0 & 12\\
+v & 9.5 & 12 & 0\\
+\end{array}
+\]
+
+You will notice that we did not add the column for the row sums $R_i$ this time. Why?
+
+\vspace{1em}\noindent {\bf Step 3: no more joins, just computations of branch lengths.} With three nodes left, we can now compute the branch lengths, that is, distances to the center $z$ by the three-point formula:
+\[
+\begin{aligned}
+d_{az} &= \tfrac{1}{2}\bigl(d_{au}+d_{av}-d_{uv}\bigr)
+       = \tfrac{1}{2}(12+9.5-12)=4.75,\\
+d_{uz} &= \tfrac{1}{2}\bigl(d_{au}+d_{uv}-d_{av}\bigr)
+       = \tfrac{1}{2}(12+12-9.5)=7.25,\\
+d_{vz} &= \tfrac{1}{2}\bigl(d_{av}+d_{uv}-d_{au}\bigr)
+       = \tfrac{1}{2}(9.5+12-12)=4.75.
+\end{aligned}
+\]
+
+The final tree is shown in Figure~\ref{f:nj-final}. Great. Done. We have constructed a phylogenetic tree from the distance matrix using the neighbour joining algorithm. But is the tree faithful to our initial distance data? Let us check, and use out tree model to estimate the distance between $c$ and $e$:
+
+\begin{marginfigure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{figs/phylogeny/nj-final.png}
+    \caption{The final tree topology after the NJ algorithm.}
+    \label{f:nj-final}
+\end{marginfigure}
+
+The final tree is shown in Figure~\ref{f:nj-final}. We have constructed a phylogenetic tree from the distance matrix using the neighbor joining algorithm. Great, done! But is the tree faithful to the initial distances? As a check, let us estimate the model distance between $c$ and $e$:
+\[
+\begin{aligned}
+\hat d_{ce}
+&= L_{cu} + d_{uz} + d_{vz} + L_{ev}\\
+&= 11 + 7.25 + 4.75 + 14.25\\
+&= 37.25.
+\end{aligned}
+\]
+From the data, $d_{ce}=39$, so the tree underestimates by $39-37.25=1.75$. This illustrates that NJ yields a close, but not perfectly faithful, additive fit when the input distances are not exactly additive.
+
+\section{Open Questions}
+
+The neighbor joining algorithm provides an efficient and widely used approach to reconstruct phylogenetic trees, but several important questions remain regarding the quality and interpretation of the resulting tree.
+
+\paragraph{Faithfulness of the reconstruction.}
+A tree is said to be \emph{faithful} (or \emph{additive}) if the distances measured along the tree exactly reproduce the observed pairwise distances between taxa. For neighbor joining, faithfulness holds when the input distance matrix is itself additive, that is, when it satisfies the four-point condition:
+\[
+d_{ij}+d_{kl}\le \max(d_{ik}+d_{jl},\,d_{il}+d_{jk})
+\quad \text{for all distinct } i,j,k,l.
+\]
+When this condition is met, NJ reconstructs the true additive tree exactly. In the example above, the distances approximately satisfy but do not perfectly meet additivity, so the resulting tree is a close approximation but not strictly faithful. Small deviations from additivity can lead to slight distortions in branch lengths or topology.
+
+\paragraph{Estimating stability: bootstrap.}
+To assess the reliability of inferred clades, one can use the \emph{bootstrap} method. In this approach, the original sequence alignment is resampled with replacement to generate many pseudo-replicate datasets. For each replicate, a tree is reconstructed (using NJ or another method). The frequency with which a given branch or grouping appears across replicates provides a measure of its statistical support, often expressed as a bootstrap percentage. High bootstrap values (typically above 70–80\%) indicate well-supported branches; low values suggest uncertainty in the inferred relationships.
+
+\paragraph{Position of the root.}
+The neighbor joining algorithm produces an \emph{unrooted} tree, showing relationships among taxa without specifying the direction of evolution. To assign a root, one typically introduces an \emph{outgroup}—a taxon known to be distantly related but still part of the broader evolutionary context. The root is then placed on the branch connecting the outgroup to the rest of the taxa, orienting the tree and allowing inference of ancestral–descendant relationships.
+
+\paragraph{Comparison with UPGMA.}
+Unlike UPGMA, neighbor joining does not assume a constant rate of evolution and can therefore accommodate non-ultrametric data. It is generally more faithful to the observed distances when the molecular clock assumption is violated. The fit of any reconstructed tree to the data can be quantified, for instance, by the \emph{least-squares error} between observed and tree-implied distances:
+\[
+E = \sum_{i<j}\bigl(d_{ij} - \hat d_{ij}\bigr)^2.
+\]
+Lower $E$ indicates a tree that better reproduces the observed distances. Comparing $E_{\mathrm{UPGMA}}$ and $E_{\mathrm{NJ}}$ for the same dataset allows an objective assessment of which method yields a more faithful model of the evolutionary relationships.
