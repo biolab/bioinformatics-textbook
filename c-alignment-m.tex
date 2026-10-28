@@ -1,17 +1,16 @@
 \chapter{Sequence Alignment Methods}
 \label{ch:alignment}
-
 Before we can understand how genes evolve and how their functions relate across organisms,  we must first learn how to compare biological sequences in a meaningful way.  The comparison of DNA, RNA, and protein sequences lies at the heart of modern bioinformatics, providing the basis for discovering evolutionary relationships, identifying functional regions, and annotating newly sequenced genomes. Sequence alignment is the systematic arrangement of sequences to reveal their similarities and differences. It serves as the foundation for nearly every computational analysis in molecular biology.
 
 \section{Evolution}
 
 In 1973, evolutionary biologist Theodosius Dobzhansky famously declared that ``nothing in biology makes sense except in the light of evolution.''
-\marginnote{Dobzhansky T, {\em Am. Biol. Teacher} {\bf 35}, 125–129 (1973)}.
-This statement places evolutionary theory at the center of unifying all aspects of biological science. Evolution provides the framework through which the diversity of life, the complexity of organisms, and the relationships among species can be understood. From molecular genetics to ecology, every biological observation gains coherence when viewed as part of an ongoing process of change driven by variation, inheritance, and natural selection. Without evolution, the facts of biology would remain isolated and inexplicable, with it, they form an integrated picture of life’s history and its continuous adaptation to a changing world.
+\marginnote{Dobzhansky T, {\em Am. Biol. Teacher} {\bf 35}, 125–129 (1973)}
+This statement places evolutionary theory at the center of unifying all aspects of biological science. Evolution provides the framework through which the diversity of life, the complexity of organisms, and the relationships among species can be understood. From molecular genetics to ecology, every biological observation gains coherence when viewed as part of an ongoing process of change driven by variation, inheritance, and natural selection. Without evolution, the facts of biology would remain isolated and inexplicable; with it, they form an integrated picture of life’s history and its continuous adaptation to a changing world.
 
 Evolution 
 \marginnote{The concept of evolution predates Darwin, with early ideas of species change proposed by naturalists like Jean-Baptiste Lamarck (1809). However, it was Charles Darwin’s {\em On the Origin of Species} (1859) that unified these ideas with a coherent mechanism—natural selection—supported by extensive evidence. Modern evolutionary biology integrates genetics, paleontology, and molecular biology to describe how life has evolved over billions of years.}
-is the process by which populations of organisms change over generations through variation (mutations of their genome), inheritance, and selection. Random mutations introduce genetic diversity, while natural selection favors variants that enhance survival or reproduction. Over time, these gradual changes accumulate, producing the diversity of life observed today. "Over time" here is actually an understatement. Evolution had billions of years in order to shape the life as we know it (Table~\ref{t:history-earth}).
+is the process by which populations of organisms change over generations through variation (mutations of their genome), inheritance, and selection. Random mutations introduce genetic diversity, while natural selection favors variants that enhance survival or reproduction. Over time, these gradual changes accumulate, producing the diversity of life observed today. ``Over time'' here is actually an understatement. Evolution has had billions of years to shape life as we know it (Table~\ref{t:history-earth}).
 
 \begin{table}[ht]
 \centering
@@ -28,10 +27,10 @@ is the process by which populations of organisms change over generations through
 2.1--1.8 Ga & Appearance of eukaryotic cells \\
 1.2 Ga & Emergence of multicellular organisms \\
 700--600 Ma & First animals (sponges and soft-bodied forms) \\
-500--475 Ma & First plants colonize land \\
 525--500 Ma & Appearance of vertebrates (jawless fish) \\
+500--475 Ma & First plants colonize land \\
 400--360 Ma & Transition of vertebrates to land (amphibians) \\
-200--150 Ma & Evolution of early mammals alongside dinosaurs \\
+225--200 Ma & Evolution of early mammals alongside dinosaurs \\
 7--6 Ma & Emergence of hominins (early human ancestors) \\
 300--200 ka & Appearance of modern humans (\textit{Homo sapiens}) \\
 \hline
@@ -50,9 +49,9 @@ and bioinformatics, homologous genes are genes that share a common ancestral ori
 
 Understanding homology—and distinguishing orthologs from paralogs—is crucial in comparative genomics, because it allows researchers to trace gene evolution, predict gene function across species, and reconstruct the molecular history of life.
 
-A classic example of \textbf{orthologs} is the hemoglobin $\beta$-chain gene in humans and the hemoglobin $\beta$-chain gene in whales (or, equivalently, the myoglobin genes in both species). These genes descended from the same ancestral gene in the last common ancestor of humans and whales and retain similar oxygen-binding functions in their respective species, illustrating how mammals adapted to different environments while conserving core physiological mechanisms. Another striking case involves the \textbf{Hox} genes, which control body-plan development in animals: the same basic set of Hox genes that patterns the body of a fruit fly also guides limb and vertebrae formation in humans.
+A classic example of \textbf{orthologs} is the hemoglobin $\beta$-chain gene in humans and the hemoglobin $\beta$-chain gene in whales (or, equivalently, the myoglobin genes in both species). These genes descended from the same ancestral gene in the last common ancestor of humans and whales and retain similar oxygen-binding functions in their respective species, illustrating how mammals adapted to different environments while conserving core physiological mechanisms. Another striking case involves the \textbf{Hox} genes, which control body-plan development in animals: the Hox genes that pattern the body of a fruit fly have orthologous counterparts in humans that guide limb and vertebrae formation.
 
-Paralogs, by contrast, showcase how gene duplication propels innovation. Gene duplication is essentially a genetic accident. It occurs when a segment of DNA is copied twice during replication or recombination. While accidental, such duplications provide extra genetic material that evolution can experiment with — one copy maintains the original function, while the other is free to accumulate mutations and potentially evolve new functions. For example, the human globin genes—$\alpha$-globin and $\beta$-globin—originated from a single ancestral gene but duplicated and diverged to specialize in different parts of the hemoglobin molecule, improving oxygen transport. Similarly, the numerous olfactory receptor genes in humans and other mammals arose from repeated duplications, allowing species to detect a wide range of smells.
+Paralogs, by contrast, showcase how gene duplication propels innovation. Gene duplication is essentially a genetic accident. It occurs when a segment of DNA is copied twice during replication or recombination. While accidental, such duplications provide extra genetic material that evolution can experiment with—one copy maintains the original function, while the other is free to accumulate mutations and potentially evolve new functions. For example, the human globin genes—$\alpha$-globin and $\beta$-globin—originated from a single ancestral gene but duplicated and diverged to specialize in different parts of the hemoglobin molecule, improving oxygen transport. Similarly, the numerous olfactory receptor genes in humans and other mammals arose from repeated duplications, allowing species to detect a wide range of smells.
 
 These examples illustrate how the study of homologous, orthologous, and paralogous genes reveals the deep evolutionary connections among organisms, and how gene duplication and divergence drive the diversity of life’s molecular machinery. They also motivate us to craft algorithmic means of finding these genes, that is, comparing the genetic sequences within the same and between different organisms. The core techniques for sequence comparison are methods that study sequence alignment.
 
@@ -70,7 +69,7 @@ s:  ATACG-TA
 t:  TAT-GATA
 \end{verbatim}
 
-Here, vertical bars indicate matches between the aligned bases. The alignment reveals that the sequences share several conserved positions, while one gap accommodates an insertion or deletion event. Such visual representations help quantify sequence similarity and form the basis for computational algorithms that compare genes or proteins across species.
+Here, vertical bars indicate matches between the aligned bases. The alignment reveals that the sequences share several conserved positions, while two gaps, one in each sequence, accommodate insertion or deletion events. Such visual representations help quantify sequence similarity and form the basis for computational algorithms that compare genes or proteins across species.
 
 Here is another alignment of these two sequences:
 
@@ -90,7 +89,7 @@ Which of the above alignments is better? It depends. :)
 
 \section{Alignment Scoring}
 
-To decide which alignment we like best, we need to define an scoring function over the alignment. Let us denote this function as $M(A(s,t))$. The simplest, and surprisingly the most common way to define the scoring, is to break it down to alignment constituents, that is, defined the function over all aligned positions:
+To decide which alignment we like best, we need to define a scoring function over the alignment. Let us denote this function as $M(A(s,t))$. The simplest, and surprisingly the most common, way to define the scoring is to break it down into alignment constituents, that is, to define the function over all aligned positions:
 \[
 M(A(s,t)) = \sum_{i=1}^{L} \sigma(x_i, y_i),
 \]
@@ -110,11 +109,11 @@ mismatches, and penalties for gaps. Say,
 \end{cases}
 \]
 
-The optimal alignment is the one that maximizes $M(A(s,t))$ according to the chosen scoring scheme. With two alignments above, and using this scoring function, the alignment score for the first alignment is $-1$, and for the second alignment $+5$ (see Table~\ref{t:step_by_step_scoring}). Of the two alignments, we would prefer the second one.
+The optimal alignment is the one that maximizes $M(A(s,t))$ according to the chosen scoring scheme. For the two alignments above, and using this scoring function, the alignment score for the first alignment is $-1$, and for the second alignment $+5$ (see Table~\ref{t:step_by_step_scoring}). Of the two alignments, we would prefer the second one.
 
 \begin{table}[h!]
 \centering
-\caption{Step-by-step scoring of the alignment $A(s,t)$.}
+\caption{Step-by-step scoring of the second alignment $A(s,t)$.}
 \label{t:step_by_step_scoring}
 \begin{tabular}{ccccc}
 \hline
@@ -136,7 +135,7 @@ The optimal alignment is the one that maximizes $M(A(s,t))$ according to the cho
 
 \section{Walks Through Alignment Tables}
 
-We can start with thinking of how to systematically search through different alignments. A search table will do. Consider an example, a sequence $s=\texttt{ATGA}$ and a sequence $t=\texttt{TCA}$, and their alignment 
+We can start by thinking about how to systematically search through different alignments. A search table will do. Consider an example, a sequence $s=\texttt{ATGA}$ and a sequence $t=\texttt{TCA}$, and their alignment 
 
 \begin{verbatim}
 s: -  A  T  -  G  A
@@ -170,11 +169,11 @@ t: T  -  C  A  -  -
   -2 -2 -1 -2 -2 -2
 \end{verbatim}
 
-Notice that a different alignment results from a different walk in the alignment table. Consider the following alignment with a walk from a Table~\ref{t:align-table-2}:
+Notice that a different alignment results from a different walk in the alignment table. Consider the following alignment with a walk from Table~\ref{t:align-table-2}:
 
 \begin{verbatim}
-s: -  A  T  G  A  -  -  -
-t: T  -  -  -  -  -  C  A
+s: -  A  T  G  A  -  -
+t: T  -  -  -  -  C  A
 \end{verbatim}
 
 \begin{table}[h!]
@@ -197,9 +196,9 @@ t: T  -  -  -  -  -  C  A
 The scoring of the positions in this alignment is shown below, with the final total score of $-14$, which is even worse than that of our previous alignment:
 
 \begin{verbatim}
-s: -  A  T  G  A  -  -  -
-t: T  -  -  -  -  -  C  A
-  -2 -2 -2 -2 -2 -2 -2 -2
+s: -  A  T  G  A  -  -
+t: T  -  -  -  -  C  A
+  -2 -2 -2 -2 -2 -2 -2
 \end{verbatim}
 
 However, notice something important: the two alignments share the same initial part of the walk. Up to position (2), both walks are identical, and therefore the score up to that point (which is $-4$) is the same as well. Once we have computed the score for a particular portion of the walk, there is no need to recompute it if another alignment shares that portion:
@@ -208,15 +207,15 @@ However, notice something important: the two alignments share the same initial p
 s: -  A | T  -  G  A
 t: T  - | C  A  -  -
 
-s: -  A | T  G  A  -  -  -
-t: T  - | -  -  -  -  C  A
+s: -  A | T  G  A  -  -
+t: T  - | -  -  -  C  A
 \end{verbatim}
 
-The total score of the alignment up to the position marked with {\tt |} is $-4$ for both walks. The realization that shared parts of the walk need to be computed only once leads to a very  efficient alignment scoring algorithm—and, ultimately, to an algorithm that can find the  highest-scoring alignment.
+The total score of the alignment up to the position marked with {\tt |} is $-4$ for both walks. The realization that shared parts of the walk need to be computed only once leads to a very efficient alignment scoring algorithm—and, ultimately, to an algorithm that can find the highest-scoring alignment.
 
 \section{A Search for the Best Alignment}
 
-Given two biological sequences, our goal is to find the alignment that achieves the highest possible score according to a chosen scoring scheme. In principle, one could generate \emph{all} possible alignments of the two sequences, compute their scores, and select the best one. However, this exhaustive approach quickly becomes infeasible even for short sequences. For instance, when each sequence has only ten symbols, there are already on the order of $1.9\times 10^5$ possible alignments, and for sequences of length twenty, this number explodes to more than $10^{11}$. A more efficient method is required.
+Given two biological sequences, our goal is to find the alignment that achieves the highest possible score according to a chosen scoring scheme. In principle, one could generate \emph{all} possible alignments of the two sequences, compute their scores, and select the best one. However, this exhaustive approach quickly becomes infeasible even for short sequences. For instance, when each sequence has only ten symbols, there are already more than $8\times 10^6$ possible alignments, and for sequences of length twenty, this number explodes to more than $2\times 10^{14}$. A more efficient method is required.
 
 Formally, let $\mathcal{A}(s,t)$ denote the set of all possible alignments between sequences $s$ and $t$. 
 For any alignment $A \in \mathcal{A}(s,t)$, let $M(A)$ represent its alignment score. 
@@ -262,10 +261,10 @@ The first row and column of the matrix are initialized with cumulative gap penal
  & \texttt{–} & \texttt{T} & \texttt{C} & \texttt{A} \\
 \hline
 \texttt{–} & \textbf{0}  & -2 & -4 & -6 \\
-\texttt{A} & \textbf{-2} & -1 & -3 & -1 \\
-\texttt{T} & -4 & \textbf{0} & -2 & -2 \\
+\texttt{A} & \textbf{-2} & -1 & -3 & -2 \\
+\texttt{T} & -4 & \textbf{0} & -2 & -4 \\
 \texttt{G} & -6 & -2 & \textbf{-1} & -3 \\
-\texttt{A} & -8 & -4 & -3 & \textbf{-1} \\
+\texttt{A} & -8 & -4 & -3 & \textbf{1} \\
 \hline
 \end{tabular}
 \end{table}
@@ -273,7 +272,7 @@ The first row and column of the matrix are initialized with cumulative gap penal
 Consider the dynamic programming table for the alignment of our two sequences (Table~\ref{t:dpt}). The numbers marked in bold indicate a path we take for optimal alignment. Based on the optimal walk through this table, we find that the optimal alignment is
 \begin{verbatim}
 s: A  T  G  A
-      |  |  |
+      |     |
 t: -  T  C  A
 \end{verbatim}
 and its score is $+1$.
@@ -283,17 +282,17 @@ It is important to note that, in some cases, more than one move may yield the sa
 \section{A Note on Dynamic Programming}
 
 Dynamic programming, a term coined by Richard Bellman in the 1950s,
-\marginnote{\raggedright Bellman, R. (1952). On the Theory of Dynamic Programming. {\em Proc. of the National Academy of Sciences of the USA}, 38(8), 716–719.} is named to describe a method of solving complex problems by breaking them down into simpler subproblems. Bellman chose the term "dynamic programming" for strategic reasons. At the time, he was working with the U.S. government, where the word "programming" was a popular term and had positive associations, particularly in operations research and planning. By adding "dynamic," he aimed to emphasize the method's focus on time-evolving processes, as the problems it addressed often involved sequences of decisions over time.
+\marginnote{\raggedright Bellman, R. (1952). On the Theory of Dynamic Programming. {\em Proc. of the National Academy of Sciences of the USA}, 38(8), 716–719.} is named to describe a method of solving complex problems by breaking them down into simpler subproblems. Bellman chose the term ``dynamic programming'' for strategic reasons. At the time, he was working at the RAND Corporation for the U.S. Air Force, whose leadership was hostile to mathematical research. The word ``programming'' then meant planning and scheduling, as in operations research, and did not sound like mathematics. By adding ``dynamic,'' he emphasized that the problems involved sequences of decisions over time, and, as he later recalled, chose a word that could hardly be used in a pejorative sense.
 
 In dynamic programming, 
-\marginnote{Needleman and Wunsch were aware of Richard Bellman’s work on dynamic programming and based their method directly on his principle of optimality. They were the first to apply dynamic programming to biological sequence alignment, which made their 1970 paper so influential.}
-solutions to subproblems are stored (or "memorized") to avoid redundant calculations, which makes it particularly efficient for problems with overlapping subproblems, like shortest path, sequence alignment, and optimization problems. The approach dynamically combines solutions to smaller subproblems to build up the solution to the original, larger problem, leading to a highly structured and systematic way of tackling complex problems.
+\marginnote{Interestingly, Needleman and Wunsch neither cited Bellman nor described their method as dynamic programming. The connection to Bellman's principle of optimality was made explicit in later work, for instance by Sankoff (1972) and Sellers (1974), who also gave the algorithm the form we use today.}
+solutions to subproblems are stored (or ``memoized'') to avoid redundant calculations, which makes it particularly efficient for problems with overlapping subproblems, like shortest path, sequence alignment, and optimization problems. The approach combines solutions to smaller subproblems to build up the solution to the original, larger problem, leading to a highly structured and systematic way of tackling complex problems.
 
 \section{Local Alignment}
 
 While the Needleman--Wunsch algorithm 
-\marginnote{Smith and Waterman built directly on the Needleman–Wunsch algorithm. In their 1981 paper ({\em J. Mol. Biol.}), they added a simple zero term to the recurrence, converting global alignment into local alignment and enabling detection of high-scoring subsequence matches.}
-searches for the best \emph{global} alignment between two complete sequences, many biological problems require identifying regions of local similarity instead. For example, two proteins may share only one conserved domain or motif, while the rest of their sequences differ substantially. The goal of \textbf{local alignment} is therefore to find the pair of subsequences that produce the highest alignment score, rather than aligning the sequences end to end. This approach was formalized by \textbf{Smith and Waterman} in 1981, who modified the dynamic programming formulation to reset negative scores to zero, ensuring that only high-scoring local regions are extended. Local alignment is particularly useful for database searches and for detecting conserved functional regions within otherwise unrelated sequences.
+\marginnote{Smith and Waterman built directly on the Needleman–Wunsch algorithm. In their 1981 paper ({\em J. Mol. Biol.}), they added a simple zero term to the recurrence, converting global alignment into local alignment and enabling detection of high-scoring matching segments.}
+searches for the best \emph{global} alignment between two complete sequences, many biological problems require identifying regions of local similarity instead. For example, two proteins may share only one conserved domain or motif, while the rest of their sequences differ substantially. The goal of \textbf{local alignment} is therefore to find the pair of contiguous segments (substrings) that produce the highest alignment score, rather than aligning the sequences end to end. This approach was formalized by \textbf{Smith and Waterman} in 1981, who modified the dynamic programming formulation to reset negative scores to zero, ensuring that only high-scoring local regions are extended. Local alignment is particularly useful for database searches and for detecting conserved functional regions within otherwise unrelated sequences.
 
 The recurrence relation for the local alignment score is defined as:
 
@@ -308,7 +307,7 @@ M_{i,\,j-1} + \sigma(\texttt{-}, t_j), & \text{(gap in $s$)}.
 \]
 
 By including the zero term, the algorithm discards regions with negative cumulative scores
-and effectively identifies the highest-scoring subsequence pair. The maximum value in the
+and effectively identifies the highest-scoring pair of segments. The maximum value in the
 matrix corresponds to the optimal local alignment score, and a traceback starting from that
 cell reveals the aligned region.
 
@@ -318,14 +317,14 @@ Here is an example. Consider two sequences, $s =$ \texttt{ACCTGAA} and $t =$ \te
 \[
 \sigma(a,b) =
 \begin{cases}
-+2, & \text{if } a = b,\\[4pt]
--1, & \text{if } a \neq b,\\[4pt]
--2, & \text{if } a = \texttt{-} \text{ or } b = \texttt{-}.
+-2, & \text{if } a = \texttt{-} \text{ or } b = \texttt{-},\\[4pt]
+-1, & \text{if } a \neq b \text{ and } a,b \neq \texttt{-},\\[4pt]
++2, & \text{if } a = b.
 \end{cases}
 \]
 
 Applying the Smith--Waterman algorithm gives the dynamic programming table shown in Table~\ref{t:smith-waterman}. 
-The maximum value in the table (\textbf{8}) corresponds to the best local alignment between the two sequences.
+The maximum value in the table (\textbf{7}) corresponds to the best local alignment between the two sequences.
 
 \begin{table}[h!]
 \centering
@@ -357,12 +356,12 @@ s: A C C T G A A
 t:   C G T G A C G
 \end{verbatim}
 
-Thus, the Smith--Waterman algorithm identifies the local region \texttt{CCTGA} in $s$ and \texttt{CGTGA} in $t$ as the best-matching subsequences, with an optimal local alignment score of $7$.
+Thus, the Smith--Waterman algorithm identifies the local region \texttt{CCTGA} in $s$ and \texttt{CGTGA} in $t$ as the best-matching segments, with an optimal local alignment score of $7$.
 
 
 \section{An Example: Longest Common Subsequence}
 
-Let us now diverge a bit, and instead of alignments use dynamic programming for a similar problem of finding the longest common subsequence. The \textbf{longest common subsequence (LCS)} of two sequences is the longest sequence that appears in both of them in the same order, but not necessarily contiguously. For example, for $s=\texttt{ACDBE}$ and $t=\texttt{ABCDE}$, the longest common subsequence is $\texttt{ACDE}$, which has length four. The LCS problem captures the idea of sequence similarity without considering insertions, deletions, or substitutions explicitly, and serves as a simplified model for understanding alignment algorithms.
+Let us now digress a bit, and instead of alignments use dynamic programming for a similar problem of finding the longest common subsequence. The \textbf{longest common subsequence (LCS)} of two sequences is the longest sequence that appears in both of them in the same order, but not necessarily contiguously. For example, for $s=\texttt{ACDBE}$ and $t=\texttt{ABCDE}$, the longest common subsequence is $\texttt{ACDE}$, which has length four. The LCS problem is a special case of sequence alignment in which matches score one and mismatches and gaps score zero, and it serves as a simplified model for understanding alignment algorithms.
 
 We first need to define the scoring mechanism for traversal of the dynamic programming table. We do not gain in the length of the longest common subsequence if we take only a symbol from one of the sequences, but we gain a length of $1$ if we take symbols from both sequences and they are equal. This can be expressed using a simple scoring function
 \[
@@ -390,10 +389,12 @@ def score(a, b):
     return 1 if a == b else 0
 \end{lstlisting}
 
-This was easy. Now, the main algorithm, the construction of the dynamic programming table. We use a trick: besides computing the scores we will also remember the neighboring cells (up and to the left) from which these scores originated. This will allow us to trace back for the solution of the problem:
+This was easy. Now, the main algorithm, the construction of the dynamic programming table. We use a trick: besides computing the scores we will also remember the neighboring cells (above, to the left, or diagonally up-left) from which these scores originated. This will allow us to trace back for the solution of the problem:
 
 \vspace*{3mm}
 \begin{lstlisting}
+from collections import defaultdict
+
 def longest_common_subsequence(s, t):
     M = defaultdict(int)
     P = {}
@@ -429,8 +430,8 @@ Finally, we can run the algorithm on two example sequences and display the resul
 s = "AACCTTGG"
 t = "ACACTGTGA"
 table, previous = longest_common_subsequence(s, t)
-substring = trace_back(s, t, table, previous)
-print(f"Longest common subsequence: {substring}")
+subsequence = trace_back(s, t, table, previous)
+print(f"Longest common subsequence: {subsequence}")
 print(f"Length: {table[len(s) - 1, len(t) - 1]}")
 
 \end{lstlisting}
@@ -454,7 +455,7 @@ should therefore be penalized more heavily than simply extending an existing one
 
 To capture this, we define an \textbf{affine gap penalty function}:
 \[
-\gamma(g) = -(\rho + \varepsilon \times x),
+\gamma(x) = -(\rho + \varepsilon \times x),
 \]
 where $\rho$ is the cost of \emph{opening} a gap, $\varepsilon$ is the cost of \emph{extending} a gap by one symbol, 
 and $x$ is the length of the gap. For example, if $\rho = 5$ and $\varepsilon = 1$, then a gap of length three 
@@ -470,19 +471,19 @@ To handle this, we maintain three separate dynamic programming matrices:
 \[
 \begin{cases}
 M_{ij}^\downarrow & \text{(gap in $t$ — moving down)},\\[4pt]
-M_{ij} & \text{(match or mismatch — moving diagonally)},\\[4pt]
+M_{ij} & \text{(best overall score — entered by moving diagonally)},\\[4pt]
 M_{ij}^\rightarrow & \text{(gap in $s$ — moving right)}.
 \end{cases}
 \]
 
-Each of these matrices represents the best possible score of an alignment ending at position $(i,j)$ 
-under the given condition. Their recurrences are defined as follows:
+The two gap matrices hold the best possible score of an alignment of the prefixes up to position $(i,j)$
+that ends with a gap in $t$ or in $s$, respectively, while $M_{ij}$ holds the best score regardless of how the alignment ends. Opening a gap of length one costs $\rho + \varepsilon$, and each further gap symbol costs $\varepsilon$. The recurrences are defined as follows:
 
 \[
 M_{ij}^\downarrow = \max
 \begin{cases}
 M_{i-1,\,j}^\downarrow - \varepsilon, & \text{(extend a gap in $t$)}\\[4pt]
-M_{i-1,\,j} - \rho, & \text{(open a new gap in $t$)}
+M_{i-1,\,j} - (\rho + \varepsilon), & \text{(open a new gap in $t$)}
 \end{cases}
 \]
 
@@ -490,7 +491,7 @@ M_{i-1,\,j} - \rho, & \text{(open a new gap in $t$)}
 M_{ij}^\rightarrow = \max
 \begin{cases}
 M_{i,\,j-1}^\rightarrow - \varepsilon, & \text{(extend a gap in $s$)}\\[4pt]
-M_{i,\,j-1} - \rho, & \text{(open a new gap in $s$)}
+M_{i,\,j-1} - (\rho + \varepsilon), & \text{(open a new gap in $s$)}
 \end{cases}
 \]
 
@@ -507,7 +508,7 @@ Together, these three matrices correctly account for affine gap penalties,
 allowing the algorithm to distinguish between opening and extending gaps 
 while still guaranteeing an optimal alignment through dynamic programming.
 
-The traversal for finding the best alignment score now involves moving \emph{across all three matrices} rather than within a single one. At each position $(i,j)$, the algorithm considers transitions not only from neighboring cells within the same matrix but also from corresponding cells in the other two matrices. The optimal path, therefore, may switch between $M_{ij}$, $M_{ij}^\downarrow$, and $M_{ij}^\rightarrow$, depending on whether the alignment continues a match, opens a new gap, or extends an existing one.  The traceback procedure follows this combined path across the three matrices, starting from the cell with the highest overall score and reconstructing the optimal alignment by identifying, step by step, which operation (match, gap opening, or gap extension) was taken. This traversal is illustrated schematically in Figure~\ref{f:affine-gap-traversal}.
+The traversal for finding the best alignment score now involves moving \emph{across all three matrices} rather than within a single one. At each position $(i,j)$, the algorithm considers transitions not only from neighboring cells within the same matrix but also from corresponding cells in the other two matrices. The optimal path, therefore, may switch between $M_{ij}$, $M_{ij}^\downarrow$, and $M_{ij}^\rightarrow$, depending on whether the alignment continues a match, opens a new gap, or extends an existing one.  The traceback procedure follows this combined path across the three matrices, starting from the bottom-right cell $M_{mn}$ and reconstructing the optimal alignment by identifying, step by step, which operation (match, gap opening, or gap extension) was taken. This traversal is illustrated schematically in Figure~\ref{f:affine-gap-traversal}.
 
 \begin{figure}[ht]
     \centering
@@ -530,10 +531,10 @@ s3: A T T G C A
 %
 This alignment highlights conserved positions (“A–T–G–A”) and regions that have changed through mutations, insertions, or deletions. 
 
-The Needleman--Wunsch algorithm can, in principle, be extended to align more than two sequences. Instead of filling a two-dimensional dynamic programming table, we would construct a table with one dimension for each sequence, where each cell represents the best alignment score for the corresponding prefixes of all sequences. For three sequences, this becomes a three-dimensional cube; for four, a four-dimensional hypercube, and so on. Each additional sequence therefore adds another dimension to the computation. The number of possible paths through this multidimensional table grows exponentially, requiring both time and memory on the order of $O(n^k)$, where $n$ is the sequence length and $k$ is the number of sequences. While this exact dynamic programming approach guarantees an optimal multiple sequence alignment, it quickly becomes impractical. As a result, nearly all practical methods rely on heuristics or approximations that trade exact optimality for tractable computation.
+The Needleman--Wunsch algorithm can, in principle, be extended to align more than two sequences. Instead of filling a two-dimensional dynamic programming table, we would construct a table with one dimension for each sequence, where each cell represents the best alignment score for the corresponding prefixes of all sequences. For three sequences, this becomes a three-dimensional cube; for four, a four-dimensional hypercube, and so on. Each additional sequence therefore adds another dimension to the computation. The table has $n^k$ cells, where $n$ is the sequence length and $k$ is the number of sequences, and each cell has to consider $2^k-1$ predecessors. Memory thus grows as $O(n^k)$ and time as $O(2^k n^k)$, both exponentially in the number of sequences. While this exact dynamic programming approach guarantees an optimal multiple sequence alignment, it quickly becomes impractical. As a result, nearly all practical methods rely on heuristics or approximations that trade exact optimality for tractable computation.
 
 Because exact multiple sequence alignment by dynamic programming is computationally infeasible for more than a few short sequences, practical methods rely on heuristics that approximate the optimal result. One of the most common strategies is progressive alignment. Instead of aligning all sequences at once, the algorithm builds the alignment step by step. First, all pairs of sequences are aligned to estimate their similarities, which are then used to construct a guide tree 
-\marginnote{The construction of the guide tree relies on pairwise sequence similarities and forms the basis for clustering algorithms such as \textit{neighbor joining}, which can infer phylogenetic relationships among sequences. We will explore these methods in a later chapter.}
+\marginnote{The guide tree is built from pairwise sequence similarities using clustering algorithms such as UPGMA or \textit{neighbor joining}, which can also infer phylogenetic relationships among sequences. We will explore these methods in a later chapter.}
 representing their approximate relationships. The two most similar sequences are aligned first, and the resulting alignment is treated as a single entity called a profile.  
 
 A profile summarizes each column of the current alignment by recording how often each nucleotide or amino acid appears there. When a new sequence is added, it is aligned against this profile rather than against individual sequences, choosing the placement that best matches the column frequencies. The process continues until all sequences have been incorporated.  
@@ -544,12 +545,12 @@ For example, given three DNA sequences
 \texttt{s}_2 = \texttt{ATGCA}, \quad 
 \texttt{s}_3 = \texttt{ATGGA},
 \]
-the algorithm might first align $\texttt{s}_1$ and $\texttt{s}_2$:
+the algorithm would first align the two most similar sequences, $\texttt{s}_2$ and $\texttt{s}_3$, which differ in a single position:
 \begin{verbatim}
-s1: A T G - A
 s2: A T G C A
+s3: A T G G A
 \end{verbatim}
-The resulting profile represents each column as a distribution of residues (for instance, the fourth column has 50\% gaps and 50\% C). The third sequence, $\texttt{s}_3$, is then aligned against this profile to produce the final multiple alignment.
+The resulting profile represents each column as a distribution of residues (for instance, the fourth column has 50\% C and 50\% G). The remaining sequence, $\texttt{s}_1$, is then aligned against this profile, with a gap placed in the fourth column, to produce the final multiple alignment.
 
 The quality of such an alignment is often measured by the \textbf{sum-of-pairs score}, which adds the scores of all pairwise comparisons implied by the alignment. Columns with matching or chemically similar residues contribute positively, while mismatches and gaps reduce the total.  
 
@@ -567,14 +568,14 @@ Multiple sequence alignments provide the foundation for many downstream analyses
 
 When aligning nucleotide sequences, the scoring function determines the numerical reward or penalty assigned to each possible pairing of nucleotides or gaps. The choice of scoring system has a strong influence on the resulting alignment, especially when gaps are present or when substitution biases exist in the data.
 
-The scoring function we have used above (match = +2, mismatch = -1, gap = -2) is a simple symmetric scheme that treats all nucleotide substitutions equally and applies a uniform penalty for gaps. It assumes that all substitutions and all gaps are equally costly.  While it may is sufficient for illustrating the mechanics of global or local alignment algorithms such as Needleman–Wunsch or Smith–Waterman, in biological data, however, substitutions between nucleotides are not all equally likely.  For instance, in DNA or RNA, the four bases (A, C, G, and T or U) exhibit a strong transition/transversion bias:
+The scoring function we have used above (match $= +2$, mismatch $= -1$, gap $= -2$) is a simple symmetric scheme that treats all nucleotide substitutions equally and applies a uniform penalty for gaps. It assumes that all substitutions and all gaps are equally costly. While it is sufficient for illustrating the mechanics of global or local alignment algorithms such as Needleman–Wunsch or Smith–Waterman, substitutions between nucleotides in biological data are not all equally likely.  For instance, in DNA or RNA, the four bases (A, C, G, and T or U) exhibit a strong transition/transversion bias:
 
 \begin{itemize}
     \item Transitions (A$\leftrightarrow$G and C$\leftrightarrow$T) occur more frequently,
     \item Transversions (A$\leftrightarrow$C, A$\leftrightarrow$T, G$\leftrightarrow$C, G$\leftrightarrow$T) occur less frequently.
 \end{itemize}
 
-To reflect this bias, one can design a substitution matrix in which transitions are penalized less heavily than transversions. In scoring Table~\ref{tab:nt_substitution_matrix}, transitions (A$\leftrightarrow$G, C$\leftrightarrow$T) receive a penalty of $-0.5$, while transversions are penalized by $-1.5$.
+To reflect this bias, one can design a substitution matrix in which transitions are penalized less heavily than transversions. In the scoring matrix in Table~\ref{tab:nt_substitution_matrix}, transitions (A$\leftrightarrow$G, C$\leftrightarrow$T) receive a penalty of $-0.5$, while transversions are penalized by $-1.5$.
 
 \begin{table}[htbp]
 \caption{Example of a nucleotide substitution matrix reflecting transition bias.}
@@ -600,10 +601,10 @@ where $P(a)$ and $P(b)$ are background frequencies and $\lambda$ is a scaling co
 
 This is analogous to how PAM or BLOSUM matrices (see below) are derived for proteins, though in practice it is less common for DNA because of its smaller alphabet.
 
-There are, however, typical parameter choices for scoring function, depending on the application. Table~\ref{tab:typical_params} summarizes commonly used scoring systems for nucleotide sequence alignment.
+In practice, the parameters of the scoring function are chosen depending on the application. Table~\ref{tab:typical_params} summarizes some example scoring systems for nucleotide sequence alignment.
 
 \begin{table}[h]
-\caption{Common scoring schemes for nucleotide alignment.}
+\caption{Example scoring schemes for nucleotide alignment.}
 \label{tab:typical_params}
 \begin{tabular}{lccc}
 \toprule
@@ -611,7 +612,7 @@ Purpose & Match & Mismatch & Gap penalty \\
 \midrule
 Didactic / simple & +2 & --1 & --2 per gap \\
 Stringent (identity) & +1 & --3 & --2 per gap  \\
-Transition-aware & +5 & --4 transition & --16 open \\
+Transition-aware (illustrative) & +5 & --4 transition & --16 open \\
 & & --10 transversion & --4 extend \\
 \bottomrule
 \end{tabular}
@@ -619,7 +620,7 @@ Transition-aware & +5 & --4 transition & --16 open \\
 
 \section{Aligning Protein Sequences}
 
-All the examples above included alignments of nucleotide (DNA or RNA) sequences. This is often useful for studying genes and regulatory regions, whereas aligning of protein sequences can provide a deeper understanding of biological function and evolution. 
+All the examples above included alignments of nucleotide (DNA or RNA) sequences. This is often useful for studying genes and regulatory regions, whereas aligning protein sequences can provide a deeper understanding of biological function and evolution. 
 
 Protein sequences evolve more slowly at the amino acid level than their corresponding nucleotide sequences since multiple codons can encode the same amino acid. As a result, proteins often retain detectable similarity long after the underlying DNA sequences have diverged beyond recognition. Aligning protein sequences therefore allows us to identify conserved structural and functional regions—such as catalytic sites, binding motifs, or folding domains—that may be invisible in nucleotide-level comparisons.
 
@@ -631,13 +632,13 @@ Protein substitution matrices are essential in bioinformatics, particularly for 
 \marginnote{The BLOSUM matrices were introduced by Steven and Jorja Henikoff in 1992 in their paper ``Amino acid substitution matrices from protein blocks,'' published in \emph{Proceedings of the National Academy of Sciences of the USA} (PNAS).}
 which is derived from highly conserved regions, or “blocks,” of protein families. By analyzing these regions that remain largely unchanged across evolution, BLOSUM matrices help detect similarity between protein sequences and reveal functional or structural relationships.
 
-The BLOSUM matrices were derived from data in the BLOCKS database, which contained about 500 conserved regions, or "blocks," from approximately 200 protein families.
+The BLOSUM matrices were derived from data in the BLOCKS database, which contained about 2,000 conserved regions, or ``blocks,'' from more than 500 protein families.
 \marginnote{A protein family is a group of proteins that share a common evolutionary origin, often re\-flected in similar structures, functions, or sequence motifs.} 
 Each block represented a stable, functionally important region within a protein family that has remained largely unchanged over evolutionary time. By focusing on these conserved regions with minimal variation, researchers could analyze meaningful substitutions that likely reflect evolutionary relationships. This made the BLOCKS database an ideal resource for deriving substitution scores that capture genuine evolutionary patterns.
 
 To create BLOSUM matrices,
 \marginnote{In BLOSUM matrix construction, similarity is measured as the percentage of identical amino acids between sequences within an aligned, gap-free block, where all sequences are of the same length.}
-sequences within each block were grouped, or "clustered," according to a specific similarity threshold. Clustering in this context means that sequences within a block that share more than the specified percentage of similarity (e.g., 62\% for BLOSUM62) are grouped together as a single "cluster." Substitutions are then only counted between different clusters rather than within a cluster, reducing the influence of closely related sequences and emphasizing broader evolutionary changes. By capturing substitutions across clusters, BLOSUM matrices can better detect relationships in distantly related proteins.
+sequences within each block were grouped, or ``clustered,'' according to a specific similarity threshold. Clustering in this context means that sequences within a block that share more than the specified percentage of similarity (e.g., 62\% for BLOSUM62) are grouped together as a single ``cluster.'' Substitutions are then only counted between different clusters rather than within a cluster, reducing the influence of closely related sequences and emphasizing broader evolutionary changes. By capturing substitutions across clusters, BLOSUM matrices can better detect relationships in distantly related proteins.
 
 \begin{table}[tbp]
 \caption{BLOSUM62 matrix.}
@@ -681,17 +682,17 @@ The process to derive a BLOSUM matrix involved several key steps:
     S(i, j) = \log \frac{P(i, j)}{P(i) \cdot P(j)}
     \end{equation}
     
-    Here, $P(i, j)$ represents the observed probability of amino acid $i$ substituting for $j$, while $P(i)$ and $P(j)$ are the background probabilities of each amino acid. Positive scores suggest substitutions are more likely than chance, while negative scores indicate disfavored substitutions.
+    Here, $P(i, j)$ represents the observed probability of amino acids $i$ and $j$ being aligned to each other, while $P(i)$ and $P(j)$ are the background probabilities of each amino acid. Positive scores suggest substitutions are more likely than chance, while negative scores indicate disfavored substitutions. The scores are then scaled and rounded to integers; BLOSUM62, for instance, reports them in units of half-bits.
 \end{enumerate}
 
 Different BLOSUM matrices, like BLOSUM45, BLOSUM62 (Table~\ref{tab:blosum62}), and BLOSUM80, cater to different levels of similarity. Lower-numbered BLOSUM matrices are suited for analyzing distantly related sequences, as they capture broader evolutionary trends. Higher-numbered matrices are more appropriate for closely related sequences. Among them, BLOSUM62 has become widely used, as it provides a balanced approach suitable for a range of sequence alignment tasks, including use in algorithms like BLAST.
 
-Note that diagonal values in a BLOSUM matrix differ because each represents a log-odds score that reflects both evolutionary and statistical factors. Matches of rare residues like tryptophan (W) or cysteine (C) are biologically significant since these amino acids are less likely to occur or change during evolution, so their conservation strongly indicates shared ancestry and yields higher scores. In contrast, common residues like alanine (A) or glycine (G) appear frequently and can substitute more easily, making their matches less informative and thus scored lower.
+Note that diagonal values in a BLOSUM matrix differ because each represents a log-odds score that reflects both evolutionary and statistical factors. Matches of rare residues like tryptophan (W) or cysteine (C) are biologically significant since these amino acids are less likely to occur or change during evolution, so their conservation strongly indicates shared ancestry and yields higher scores. In contrast, common residues like alanine (A) or serine (S) appear frequently and can substitute more easily, making their matches less informative and thus scored lower.
 
-Also note that amino acids with similar physicochemical properties, such as polarity, charge, or size, tend to substitute for one another more often in evolution, since such changes are less likely to disrupt protein structure or function. Consequently, BLOSUM matrices generally assign higher (less negative or even positive) scores to substitutions between amino acids with similar properties. For example, leucine (L) and isoleucine (I) are both large, nonpolar, hydrophobic amino acids commonly found in protein cores, so swapping them tends to preserve structure. Similarly, aspartic acid (D) and glutamic acid (E) are both small, negatively charged (acidic) residues, so substituting one for the other often maintains charge and function.
+Also note that amino acids with similar physicochemical properties, such as polarity, charge, or size, tend to substitute for one another more often in evolution, since such changes are less likely to disrupt protein structure or function. Consequently, BLOSUM matrices generally assign higher (less negative or even positive) scores to substitutions between amino acids with similar properties. For example, leucine (L) and isoleucine (I) are both large, nonpolar, hydrophobic amino acids commonly found in protein cores, so swapping them tends to preserve structure. Similarly, aspartic acid (D) and glutamic acid (E) are both negatively charged (acidic) residues, so substituting one for the other often maintains charge and function.
 
 PAM (Point Accepted Mutation) matrices, developed by Margaret Dayhoff and colleagues, take a different approach. 
 \marginnote{PAM matrices were developed by Margaret O. Dayhoff and colleagues in the paper “A model of evolutionary change in proteins,” published in \emph{Atlas of Protein Sequence and Structure} (1978).}
-Unlike BLOSUM, which is based on direct observations from protein blocks, PAM matrices are derived from a theoretical model of evolutionary change, focusing on closely related sequences. PAM1, the starting matrix, represents a 1\% divergence, meaning each amino acid has had a 1\% chance of mutating to another. Higher PAM matrices, like PAM250, are extrapolated from PAM1, estimating amino acid changes over more extended evolutionary periods.
+Unlike BLOSUM, where each matrix is estimated directly from blocks at a given similarity level, PAM matrices combine observed data with an explicit model of evolutionary change. PAM1, the starting matrix, is estimated from substitutions observed in alignments of closely related proteins (at least 85\% identical) and corresponds to an evolutionary distance of one accepted point mutation per 100 amino acids, that is, 1\% of positions changed. Higher PAM matrices, like PAM250, are obtained by extrapolating PAM1 with a Markov model, that is, by multiplying the PAM1 transition matrix by itself, which estimates amino acid changes over longer evolutionary periods.
 
-The key differences between BLOSUM and PAM lie in their methodologies and applications. BLOSUM matrices rely on observed data from conserved protein regions and do not involve extrapolation, making them ideal for identifying more distant relationships between proteins. Conversely, PAM matrices are modeled on evolutionary theory and use extrapolation, making them better suited for closely related sequences in global alignments. Thus, while BLOSUM is preferred for broader sequence similarity searches, PAM matrices find their application in evolutionary studies requiring a focus on closely related sequences.
+The key differences between BLOSUM and PAM lie in their methodologies. BLOSUM matrices rely on observed data from conserved protein regions and do not involve extrapolation, which makes them particularly reliable for detecting distant relationships between proteins. PAM matrices for large distances, in contrast, depend on extrapolation from closely related sequences, so errors in PAM1 accumulate. Note also that the numbering runs in opposite directions: low PAM numbers (e.g., PAM30) and high BLOSUM numbers (e.g., BLOSUM80) are suited for closely related sequences, while high PAM numbers (e.g., PAM250) and low BLOSUM numbers (e.g., BLOSUM45) are suited for distant ones. In practice, BLOSUM matrices are preferred for similarity searches, while PAM matrices, thanks to their explicit evolutionary model, remain useful in evolutionary studies.

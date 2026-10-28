@@ -1,13 +1,12 @@
 \chapter{Sequence Alignment Tools}
 \label{ch:alignment-tools}
-
-The development of efficient sequence alignment tools represents one of the most transformative milestones in bioinformatics. Modern biology generates vast quantities of genomic and proteomic data, and manually aligning even a handful of sequences using the original dynamic programming algorithms is computationally too expensive. To speed up this tasks, or better, to make them available for large community of molecular biologists, a series of heuristic and optimized tools were created to approximate optimal alignments with remarkable speed and accuracy. Among these, BLAST
+The development of efficient sequence alignment tools represents one of the most transformative milestones in bioinformatics. Modern biology generates vast quantities of genomic and proteomic data, and comparing a sequence against an entire database using the original dynamic programming algorithms is computationally too expensive. To speed up these tasks, or better, to make them available to a large community of molecular biologists, a series of heuristic and optimized tools was created to approximate optimal alignments with remarkable speed and accuracy. Among these, BLAST
 \marginnote{The acronym BLAST stands for Basic Local Alignment Search Tool, but its creators likely knew what they were doing. Biologists quickly began saying things like ``I'll blast this sequence and see what comes up.'' The verb caught on instantly; few tools in science have managed to become both indispensable and grammatically productive.}
-revolutionized local alignment searches by introducing a word-based heuristic that made database-scale similarity searches routine. Later, tools such as CLUSTAL, MAFFT, and MUSCLE extended these ideas to multiple sequence alignment, enabling researchers to analyze entire gene families and protein domains simultaneously. Together, these tools form the computational backbone of modern bioinformatics, supporting genome annotation, evolutionary inference, and functional analysis.
+revolutionized local alignment searches by introducing a word-based heuristic that made database-scale similarity searches routine. In parallel, tools such as CLUSTAL, and later MAFFT and MUSCLE, made multiple sequence alignment practical, enabling researchers to analyze entire gene families and protein domains simultaneously. Together, these tools form the computational backbone of modern bioinformatics, supporting genome annotation, evolutionary inference, and functional analysis.
 
 \section{Some Typical Questions We Can Answer with Alignment Tools}
 
-Sequence alignment tools are not only about matching letters in biological strings-they are instruments for asking and answering biological questions that can be expressed in computational terms. Here are some common questions that can be answered with modern sequence alignment tools:
+Sequence alignment tools are not only about matching letters in biological strings---they are instruments for asking and answering biological questions that can be expressed in computational terms. Here are some common questions that can be answered with modern sequence alignment tools:
 
 \begin{itemize}
     \item \textbf{Does this new gene resemble any known gene?}  
@@ -37,18 +36,18 @@ By framing biological questions in terms of sequence similarity and alignment, t
 
 BLAST (Basic Local Alignment Search Tool)
 \marginnote{BLAST was crafted by Altschul and colleagues and first reported in the {\em Journal of Molecular Biology} (1990). The tool revolutionized bioinformatics by making large-scale sequence similarity searches both fast and practical.}
-identifies regions of similarity between sequences by comparing a query sequence to a database of known sequences. Unlike global alignment algorithms, which attempt to align entire sequences, BLAST uses local alignment, focusing on finding high-similarity segments (subsequences) within larger sequences. This approach is computationally efficient and well-suited for detecting functional or evolutionary relationships across genomic and protein data.
+identifies regions of similarity between sequences by comparing a query sequence to a database of known sequences. Unlike global alignment algorithms, which attempt to align entire sequences, BLAST uses local alignment, focusing on finding high-similarity contiguous segments within larger sequences. This approach is computationally efficient and well-suited for detecting functional or evolutionary relationships across genomic and protein data.
 
 The BLAST algorithm works in three main phases: \textbf{seeding}, \textbf{extension}, and \textbf{evaluation}.
 
 \begin{enumerate}
-    \item \textbf{Seeding}: The algorithm first breaks down the query sequence into shorter words or "k-mers" of a fixed length, usually three residues for proteins, eleven for nucleotides. These k-mers are compared against all possible k-mers in the database.
+    \item \textbf{Seeding}: The algorithm first breaks down the query sequence into shorter words or ``k-mers'' of a fixed length, usually three residues for proteins and eleven for nucleotides. For nucleotides, BLAST looks for exact matches of these words in the database sequences. For proteins, it also considers similar words: for each query word, it collects all words that score at least a threshold $T$ against it under the scoring matrix, and searches the database for any of them.
     \marginnote{Each entry in these databases is annotated with metadata—organism name, gene or protein identifier, functional description, literature references, and cross-links to resources like GenBank, UniProt, or Gene Ontology—so that when BLAST finds a similar sequence, the result can be interpreted in a biological context.}
-    If the similarity between the query k-mer and a database k-mer meets a certain threshold score, it becomes a "seed" that may lead to a high-scoring alignment.
+    Each such word hit becomes a ``seed'' that may lead to a high-scoring alignment.
     
-    \item \textbf{Extension}: For each seed match, BLAST extends the alignment in both directions, calculating a score for each extension by adding or subtracting points for matches, mismatches, and gaps based on a scoring matrix (e.g., BLOSUM for proteins, which gives positive scores to biologically likely substitutions). When multiple high-scoring segment pairs occur between the same query and database entry, BLAST combines them into a single hit under that accession, reporting the best overall score and the combined alignment coverage. This ensures the output highlights biologically meaningful relationships rather than listing every local match separately. This process continues until the alignment score drops below a threshold, meaning no further extension would improve the alignment. The resulting segments, known as high-scoring segment pairs, represent local regions of high similarity between the query and database sequence.
+    \item \textbf{Extension}: For each seed match, BLAST extends the alignment in both directions, calculating a score for each extension by adding or subtracting points for matches, mismatches, and gaps based on a scoring matrix (e.g., BLOSUM for proteins, which gives positive scores to biologically likely substitutions). The extension stops once the score falls more than a set amount below the best score reached so far, and the alignment is then trimmed back to the point of that best score. This is a heuristic: it saves time, at the cost of occasionally missing an alignment that would have recovered after a poorly scoring stretch. The resulting segments, known as high-scoring segment pairs (HSPs), represent local regions of high similarity between the query and database sequence. When multiple HSPs occur between the same query and database entry, BLAST combines them into a single hit under that accession, reporting the best overall score and the combined alignment coverage. This ensures the output highlights biologically meaningful relationships rather than listing every local match separately.
     
-    \item \textbf{Evaluation and Ranking (E-value calculation)}: The significance of each HSP is assessed using a statistical measure called the \textit{E-value}, or "expect" value. The E-value estimates the number of alignments with a score equal to or greater than the observed score that could be expected by chance when searching a database of a given size. It’s calculated using the formula:
+    \item \textbf{Evaluation and Ranking (E-value calculation)}: The significance of each HSP is assessed using a statistical measure called the \textit{E-value}, or ``expect'' value. The E-value estimates the number of alignments with a score equal to or greater than the observed score that could be expected by chance when searching a database of a given size. It is calculated using the formula:
 
     \[
     E = K \times m \times n \times e^{-\lambda S}
@@ -56,9 +55,9 @@ The BLAST algorithm works in three main phases: \textbf{seeding}, \textbf{extens
 
     where:
     \begin{itemize}
-        \item \( K \) and \( \lambda \) are statistical parameters, essentially a normalization constants. They dependent on the scoring system and sequence composition, Together, they describe the extreme value distribution of alignment scores expected by chance.
-        \item \( m \) and \( n \) are the lengths of the query and database sequences, respectively.
-        \item \( S \) is the raw alignment score of the high-scoring segment pairs, that is, the score of the best contiguous local alignment produced by extending a single seed in both directions.
+        \item \( K \) and \( \lambda \) are statistical parameters, essentially normalization constants. They depend on the scoring system and sequence composition. Together, they describe the extreme value distribution of alignment scores expected by chance.
+        \item \( m \) is the length of the query, and \( n \) is the total length of all sequences in the database.
+        \item \( S \) is the raw alignment score of the high-scoring segment pair, that is, the score of the best contiguous local alignment produced by extending a single seed in both directions.
     \end{itemize}
 
     Lower E-values indicate more significant alignments. For example, an E-value close to zero suggests the alignment is unlikely to be random, hinting at a meaningful biological relationship.
@@ -66,16 +65,16 @@ The BLAST algorithm works in three main phases: \textbf{seeding}, \textbf{extens
 
 Intuitively, the E-value indicates how many matches of this quality would be expected to occur by chance in a database of the same size. For example, an E-value of \(10^{-5}\) means that about one in 100{,}000 random searches would produce an alignment this good. Small E-values therefore suggest that the match is unlikely to be random and is likely to be biologically meaningful.
 
-By efficiently identifying and ranking local similarities, BLAST allows researchers to filter out biologically relevant hits from random alignments. Its computational efficiency and effectiveness have made it a cornerstone in bioinformatics, used for everything from annotating gene sequences to exploring evolutionary relationships.
+By efficiently identifying and ranking local similarities, BLAST allows researchers to separate biologically relevant hits from random alignments. Its computational efficiency and effectiveness have made it a cornerstone in bioinformatics, used for everything from annotating gene sequences to exploring evolutionary relationships.
 
 \section{Accessing BLAST and BLAST Variants}
 
-BLAST is accessible through various bioinformatics websites, like that of the National Center for Biotechnology Information (NCBI)\footnote{\url{https://blast.ncbi.nlm.nih.gov/Blast.cgi}}, and accessed on site, through application program interface, or run on a local computer. There are several BLAST variants tailored for different types of sequence comparisons:
+BLAST is accessible through various bioinformatics websites, such as that of the National Center for Biotechnology Information (NCBI)\footnote{\url{https://blast.ncbi.nlm.nih.gov/Blast.cgi}}, where it can be used interactively or through an application programming interface (API). It can also be run on a local computer. There are several BLAST variants tailored for different types of sequence comparisons:
 
 \begin{itemize}
     \item \textbf{blastn}: Compares a nucleotide query sequence against a nucleotide database. It is commonly used for identifying similar DNA or RNA sequences, locating genes within genomes, or verifying cloned sequences.
     
-    \item \textbf{blastp}: Compares an amino acid query sequence against a protein database. This is typically used to infer possible protein function or homology when the corresponding gene sequence is known.
+    \item \textbf{blastp}: Compares an amino acid query sequence against a protein database. This is typically used to infer the possible function or homologs of a protein whose sequence is known.
     
     \item \textbf{blastx}: Translates a nucleotide query sequence in all six reading frames and compares the resulting protein sequences against a protein database. This is particularly useful when analyzing DNA sequences that may encode proteins but where the correct reading frame is unknown.
     
@@ -101,16 +100,15 @@ This sequence looks suspiciously regular—perhaps it encodes a conserved protei
 The BLAST output shows a top hit with, perhaps (try it on your own to see what actually happens), the following summary:
 
 \begin{quote}
-\textbf{Top hit:} cAMP-dependent protein kinase catalytic subunit (PKA-C)  
-\textbf{Organism:} \textit{Dictyostelium discoideum}  
-\textbf{E-value:} \(5 \times 10^{-87}\)  
-\textbf{Percent identity:} 98\%
-\textbf{Accession:} XM\_640288.1
+\textbf{Top hit:} cAMP-dependent protein kinase catalytic subunit (PKA-C) \\
+\textbf{Organism:} \textit{Dictyostelium discoideum} \\
+\textbf{E-value:} \(\approx 10^{-28}\) \\
+\textbf{Percent identity:} 100\%
 \end{quote}
 
 The alignment reveals that the query fragment encodes a portion of the catalytic domain of the \textit{pkac} gene, a well-studied protein kinase involved in cell signaling and developmental regulation.
 
-\subsection*{BLAST Example: Finding Protein Homologs Across Mammals}
+\subsection{BLAST Example: Finding Protein Homologs Across Mammals}
 
 Suppose we have obtained a short amino acid sequence fragment from a human protein sample and wish to identify it and find homologous proteins in other mammals. The fragment is:
 
@@ -121,9 +119,9 @@ MVHLTPEEKSAVTALWGKVNV
 Running this fragment through blastp (protein–protein search) at the NCBI BLAST server may yield the following top hit:
 
 \begin{quote}
-\textbf{Top hit:} Hemoglobin subunit beta (\textit{Homo sapiens})  
-\textbf{Accession:} NP\_000509.1  
-\textbf{E-value:} \(2 \times 10^{-29}\)  
+\textbf{Top hit:} Hemoglobin subunit beta (\textit{Homo sapiens}) \\
+\textbf{Accession:} NP\_000509.1 \\
+\textbf{E-value:} \(\approx 10^{-5}\) \\
 \textbf{Percent identity:} 100\% over 21 amino acids
 \end{quote}
 
@@ -142,18 +140,18 @@ Species & Protein & Identity \\
 \end{tabular}
 \end{center}
 
-These results show that the query sequence corresponds to the N-terminal region of human hemoglobin’s beta subunit and that highly similar homologs are present in all tested mammals. The high conservation reflects the protein’s essential role in oxygen transport.
+Note that even a perfect match yields only a modest E-value here. A 21-residue query can accumulate only a limited alignment score, and the E-value grows with the size of the searched database, so the exact value depends on which database we search. Still, the results show that the query sequence corresponds to the N-terminal region of human hemoglobin’s beta subunit and that highly similar homologs are present in all tested mammals. The high conservation reflects the protein’s essential role in oxygen transport.
 
 \section{Multiple Sequence Alignment}
 
 A popular technique and a software tool that implements a heuristic approach to multiple sequence alignment is CLUSTAL. 
-\marginnote{CLUSTAL was introduced by Higgins and Sharp in {\em Computer Applications in the Biosciences} (1988), the journal that is now know as {\em Bioinformatics} and became one of the most widely used tools for multiple sequence alignment, setting the standard for comparative sequence analysis.}
-The term CLUSTAL derived from ``cluster alignment,'' reflecting the software's purpose of clustering and aligning multiple sequences. The name emphasizes its function in performing multiple sequence alignment by progressively clustering sequences based on their similarity. CLUSTAL works through a series of steps, typically following a progressive alignment approach:
+\marginnote{CLUSTAL was introduced by Higgins and Sharp in {\em Gene} (1988), with an improved version following in {\em Computer Applications in the Biosciences} (1989), the journal now known as {\em Bioinformatics}. It became one of the most widely used tools for multiple sequence alignment, setting the standard for comparative sequence analysis.}
+The name CLUSTAL is derived from ``cluster alignment,'' reflecting the software's purpose of clustering and aligning multiple sequences. The name emphasizes its function in performing multiple sequence alignment by progressively clustering sequences based on their similarity. CLUSTAL works through a series of steps, typically following a progressive alignment approach:
 
 \begin{enumerate}
-\item \textbf{Pairwise Alignment}: First, CLUSTAL calculates pairwise alignment scores for all pairs of sequences using methods such as Needleman-Wunsch (for global alignment) or Smith-Waterman (for local alignment). These scores quantify how similar each sequence pair is.
-\item \textbf{Guide Tree Construction}: CLUSTAL then uses these pairwise alignment scores to build a guide tree, often by a method such as the neighbor-joining algorithm (more on this in the next chapter). This tree reflects the evolutionary relationships between sequences based on their similarity scores, determining the order in which sequences will be aligned.
-\item \textbf{Progressive Alignment}: Using the guide tree, CLUSTAL progressively aligns sequences from most to least similar, starting with closely related pairs and gradually aligning less similar ones. At each step, previously aligned groups are treated as single units or "profiles" to ensure consistency across the alignment.
+\item \textbf{Pairwise Alignment}: First, CLUSTAL calculates pairwise alignment scores for all pairs of sequences. The original CLUSTAL used a fast approximate method based on matching short words (k-tuples), while later versions also offer full dynamic programming alignment in the style of Needleman--Wunsch. These scores quantify how similar each sequence pair is.
+\item \textbf{Guide Tree Construction}: CLUSTAL then uses these pairwise alignment scores to build a guide tree. The original CLUSTAL used the UPGMA clustering method, while CLUSTAL W switched to the neighbor-joining algorithm (more on both in the next chapter). This tree reflects the evolutionary relationships between sequences based on their similarity scores, determining the order in which sequences will be aligned.
+\item \textbf{Progressive Alignment}: Using the guide tree, CLUSTAL progressively aligns sequences from most to least similar, starting with closely related pairs and gradually aligning less similar ones. At each step, previously aligned groups are treated as single units or ``profiles'' to ensure consistency across the alignment.
 \end{enumerate}
 
 An important advancement came with \textbf{CLUSTAL W}.
@@ -171,9 +169,9 @@ accelerates the computation of sequence similarity by representing sequences as 
 
 \textbf{MUSCLE} (Multiple Sequence Comparison by Log-Expectation) focuses on progressively refining the alignment through three main stages:
 \begin{enumerate}
-    \item Draft alignment: MUSCLE quickly estimates pairwise distances using short word matches (k-mers) instead of full alignments and constructs an initial guide tree that determines the order in which sequences will be aligned.  
-    \item Improved guide tree: the algorithm recomputes pairwise distances using the more accurate alignment-based similarities, reconstructs a new guide tree, and realigns the sequences accordingly.  
-    \item Iterative refinement: MUSCLE divides the alignment into subgroups, realigns them, and keeps changes only if they increase the overall alignment score, measured by a log-expectation function that estimates how likely aligned residues are to be related.
+    \item Draft alignment: MUSCLE quickly estimates pairwise distances using short word matches (k-mers) instead of full alignments, constructs an initial guide tree, and uses it to build a draft progressive alignment.  
+    \item Improved guide tree: the algorithm recomputes pairwise distances from the draft alignment, which are more accurate than the k-mer estimates, reconstructs a new guide tree, and realigns the sequences accordingly.  
+    \item Iterative refinement: MUSCLE repeatedly splits the sequences into two groups by removing an edge of the guide tree, realigns the two groups as profiles, and keeps the change only if it increases the sum-of-pairs score of the alignment. The log-expectation function that gives MUSCLE its name is the score used when aligning profiles to each other; it estimates how likely the aligned residues are to be related.
 \end{enumerate}
 Through this cycle of alignment, reevaluation, and refinement, MUSCLE efficiently converges toward a high-quality multiple sequence alignment without requiring exhaustive computation.  
 

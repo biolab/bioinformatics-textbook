@@ -17,6 +17,9 @@ main.pdf
 0*.pdf
 prompts.md
 copy-to-server
+*-old.*
+*-diff.*
+code/
 
 ## Intermediate documents:
 *.dvi

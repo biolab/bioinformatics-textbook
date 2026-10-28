@@ -1,11 +1,10 @@
 \chapter{Where Are the Genes?}
 \label{ch:genes}
-
 Genes are located on the DNA. :)
 
 But where exactly? At this stage, let's define a gene as a specific region of the genome that contains a sequence of DNA which is transcribed into messenger RNA and subsequently translated into a protein.
 
-By now, you may be familiar with the central dogma of molecular biology, which essentially explains the flow of genetic information: from DNA to RNA to protein. You also know that DNA is made up of two strands, and these strands run in opposite directions, meaning one strand is the reverse complement of the other. Genes can be found on either strand.
+By now, you may be familiar with the central dogma of molecular biology, which essentially explains the flow of genetic information: from DNA to RNA to protein. You also know that DNA is made up of two strands, and these strands run in opposite directions and are complementary, so that one strand is the reverse complement of the other. Genes can be found on either strand.
 
 DNA and RNA are synthesized in the 5' to 3' direction. This means that during synthesis, a strand is read from 3' to 5' to create a complementary RNA strand. Consider an example fragment of the DNA:
 
@@ -16,9 +15,9 @@ DNA and RNA are synthesized in the 5' to 3' direction. This means that during sy
 
 The fragment contains two strands: one running from 5' to 3' and the other running from 3' to 5'. Note that RNA can be synthesized from either of these two strands, and the RNA sequence will be the {\em reverse complement} of the DNA sequence. It will be a {\em complement} since the nucleotides pair with their complementary bases (A with U in RNA, T with A, G with C, and C with G), and reverse since the RNA strand is synthesized in the 5' to 3' direction, opposite to the template strand's 3' to 5' direction.
 
-The {\em 5' to 3' strand} is often referred to as the {\em coding strand} (also known as the sense strand) because it has the same sequence as the mRNA, except that thymine is replaced with uracil in RNA. This is the strand that directly reflects the sequence of the resulting protein. The {\em 3' to 5' strand} is referred to as the {\em template strand} (also known as the antisense strand) because it serves as the template for RNA polymerase during transcription. RNA polymerase reads the template strand in the 3' to 5' direction to synthesize mRNA in the 5' to 3' direction.
+For a given gene, the strand whose sequence matches the mRNA is called the {\em coding strand} (also known as the sense strand): it has the same sequence as the mRNA, except that thymine is replaced with uracil in RNA. This is the strand that directly reflects the sequence of the resulting protein. The other strand is called the {\em template strand} (also known as the antisense strand) because it serves as the template for RNA polymerase during transcription. RNA polymerase reads the template strand in the 3' to 5' direction to synthesize mRNA in the 5' to 3' direction. Which of the two strands is the coding strand depends on the gene: for one gene, it may be the upper strand of our fragment, and for another gene, the lower one.
 
-In databases like {\em NCBI Nucleotide}, sequences are typically provided in the {\em 5' to 3' direction of the coding strand}. This means that the sequences listed usually correspond to the coding (sense) strand, which matches the mRNA sequence that would be produced (with thymine instead of uracil). Therefore, when we retrieve a nucleotide sequence from a database like NCBI, you are usually getting the sequence in the orientation of the coding strand, from the 5' to 3' end.
+In databases like {\em NCBI Nucleotide}, sequences are always written in the {\em 5' to 3' direction}. For mRNA or coding sequence records, the listed sequence is that of the coding strand, which matches the mRNA sequence that would be produced (with thymine instead of uracil). A genome record, however, lists only one of the two strands, called the {\em plus strand}. Genes on the plus strand can be read directly from the listed sequence, while for genes on the other strand, the {\em minus strand}, the coding sequence is found in the reverse complement of the listed sequence. This is why, when searching for genes in a genome, we have to examine both the sequence and its reverse complement.
 
 \section{Reading Frames}
 
@@ -28,14 +27,14 @@ Consider again the DNA fragment we have seen before. If we read our sequence fro
 
 \begin{verbatim}
     TTT GGA TTC CGG
-    TTG GAT TCG
+    TTG GAT TCC
     TGG ATT CCG
 \end{verbatim}
 
 Each sequence
 \marginpar{\raggedright
 Instead of thymine, the base used in RNA is uracil. We will leave the writing of the sequences as is. The coding tables are most often written in the DNA language.}
-above represents the codons for that reading frame in DNA (not RNA), so thymine (T) is still shown instead of uracil (U). Notice also that instead of generating the reverse complement of the template strand, we can simply read the 5' to 3' strand directly, which is why it is called the coding strand, because its sequence already matches the mRNA (except that T replaces U). These three sequences would translate into three different sequences of amino acid sequences:
+above represents the codons for that reading frame in DNA (not RNA), so thymine (T) is still shown instead of uracil (U). Notice also that instead of generating the reverse complement of the template strand, we can simply read the 5' to 3' strand directly, which is why it is called the coding strand, because its sequence already matches the mRNA (except that U replaces T). These three sequences would translate into three different amino acid sequences:
 %
 \begin{verbatim}
     Phe - Gly - Phe - Arg
@@ -70,7 +69,7 @@ above represents the codons for that reading frame in DNA (not RNA), so thymine 
     \caption{Genetic code table.}
     \end{table}
 
-We could also use the upper strain of the DNA fragment as the template strain. Let us write it in the 3' to 5' direction, that is, reading it from right to left:
+We could also use the upper strand of the DNA fragment as the template strand. Let us write it in the 3' to 5' direction, that is, reading it from right to left:
 
 \begin{verbatim}
     3'-GGC CTT AGG TTT-5'
@@ -81,7 +80,7 @@ The complementary RNA strand would be:
     5'-CCG GAA TCC AAA-3'
 \end{verbatim}
 
-Using this strain, the three possible reading frames are:
+Using this strand, the three possible reading frames are:
 
 \begin{verbatim}
     CCG GAA TCC AAA
@@ -99,12 +98,11 @@ Which would translate into:
 
 To read our DNA fragment,
 \marginpar{\raggedright Given a DNA sequence and its reverse complement, we have six reading frames.}
-we thus have six possibilities, three for each strain. And we thus get six different amino acid sequences. Let us automate this process using Python code, also to check if our transciptions and translations are correct.
+we thus have six possibilities, three for each strand. And we thus get six different amino acid sequences. Let us automate this process using Python code, also to check if our transcriptions and translations are correct.
 
 \vspace*{3mm}
 \begin{lstlisting}
 from Bio.Seq import Seq
-from Bio.Data import CodonTable
 
 coding_seq = "TTTGGATTCCGG"
 
@@ -144,7 +142,7 @@ Nucleotide sequence: TGGATTCCG
 Amino acid sequence: WIP
 \end{lstlisting}
 
-Whcih is fine, but note that the aminoacids are here represented with single letters. To use the three-letter code, we need to add the following to our code (where appropriate):
+Which is fine, but note that the amino acids are here represented with single letters. To use the three-letter code, we need to add the following to our code (where appropriate):
 
 \vspace*{3mm}
 \begin{lstlisting}
@@ -159,7 +157,7 @@ aa_three_letter = {
 def translate_to_three_letter(protein_seq):
     return "-".join(aa_three_letter[aa] for aa in protein_seq)
 
-print(f"Final sequence: {translate_to_three_letter(protein_seq)}")
+print(translate_to_three_letter("FGFR"))  # Phe-Gly-Phe-Arg
 \end{lstlisting}
 
 Let us change the code slightly, and output the translations for all the six reading frames. Notice that, given the coding sequence, we also need to translate all the frames from its reverse complement:
@@ -197,22 +195,22 @@ and matches the translations we have done manually.
 A typical gene consists of several key regions that govern its expression
 \marginpar{\raggedright 
 Gene expression is the process by which information from a gene is used to synthesize a functional product, typically a protein, through transcription and translation.}
-and function. The {\em promoter} region contains binding sites for transcription factors and RNA polymerase, which initiate transcription at the {\em transcription start site (TSS)}. The {\em 5' untranslated region (5' UTR)} follows, playing a role in regulating mRNA stability and translation efficiency, though it is not translated into protein. The {\em open reading frame (ORF)} is the main coding region, responsible for producing the protein sequence. After the ORF, the {\em 3' untranslated region (3' UTR)} influences mRNA stability, localization, and translation after transcription. Finally, the {\em polyadenylation signal} signals the addition of a poly-A tail to the mRNA, which enhances its stability and facilitates export from the nucleus.
+and function. The {\em promoter} region contains binding sites for RNA polymerase and transcription factors. In bacteria, these include two short conserved sequences located about 35 and 10 nucleotides upstream of the {\em transcription start site (TSS)}, where transcription begins. The {\em 5' untranslated region (5' UTR)} follows and it is transcribed but not translated into protein, and in bacteria, it contains the {\em ribosome-binding site} (the Shine--Dalgarno sequence) that positions the ribosome at the start codon. The {\em open reading frame (ORF)}, running from the start codon to the stop codon, is the main coding region, responsible for producing the protein sequence. After the ORF, the {\em 3' untranslated region (3' UTR)} influences mRNA stability and translation. Finally, the {\em transcription terminator} signals RNA polymerase to stop transcription.
 
 \begin{figure*}[ht]
     \centering
     \includegraphics[width=0.99\textwidth]{figs/genes/structure-gene-bacterial.png}
-    \caption{A structure of a typical gene.}
+    \caption{Structure of a typical bacterial gene.}
     \label{fig:w-gene-structure}
 \end{figure*}
 
-Figure~\ref{fig:w-gene-structure} shows a typical gene structure as we have described above. Note that this structure represents a bacterial (prokaryotic) genome, where genes are typically organized without introns. In contrast, in eukaryotic genomes, genes contain introns that are removed during a process called splicing, leaving only exons to form the mature mRNA.
+Figure~\ref{fig:w-gene-structure} shows a typical gene structure as we have described above. Note that this structure represents a bacterial (prokaryotic) gene. Bacterial genes are typically organized without introns, and neighboring genes are often transcribed together into a single mRNA, forming an {\em operon}. Eukaryotic genes are more complex. Their mRNAs are processed before leaving the nucleus: among other things, a {\em polyadenylation signal} near the end of the transcript triggers the addition of a poly-A tail, which enhances mRNA stability and facilitates export from the nucleus. In addition, many eukaryotic genes contain introns that are removed during a process called splicing, leaving only exons to form the mature mRNA. The prevalence of introns varies greatly: almost all human genes have them, while in budding yeast, only about 5\% of genes do.
 
 \section{Open Reading Frames}
 
-An {\em open reading frame (ORF)} is a continuous stretch of nucleotides in a DNA sequence that has the potential to be translated into a protein. It begins with a start codon (usually ATG) and extends up to, but does not include, a stop codon (such as TAA, TAG, or TGA), which signals the end of translation. An ORF is different from a {\em reading frame}, which refers to one of the three possible ways in which a nucleotide sequence can be read in sets of three nucleotides (codons). A reading frame becomes an open reading frame only when it includes a start codon, a series of codons that could code for amino acids, and ends with a stop codon, indicating a potential protein-coding sequence. Not all reading frames are open reading frames, as some may not contain both a start and stop codon.
+An {\em open reading frame (ORF)} is a continuous stretch of nucleotides in a DNA sequence that has the potential to be translated into a protein. It begins with a start codon (usually ATG) and extends up to a stop codon (such as TAA, TAG, or TGA), which signals the end of translation. Whether the stop codon itself is counted as part of the ORF varies between sources and the coding sequences annotated in GenBank include it. An ORF is different from a {\em reading frame}, which refers to one of the three possible ways in which a nucleotide sequence can be read in sets of three nucleotides (codons). An ORF is a stretch {\em within} a reading frame: it starts with a start codon, continues with a series of codons that could code for amino acids, and ends with a stop codon, indicating a potential protein-coding sequence. A single reading frame of a long sequence, such as a genome, typically contains many ORFs.
 
-An {\em open reading frame (ORF)} is not necessarily the coding sequence of a gene because the start codon, an {\em ATG}, also encodes the amino acid methionine, which can appear within a gene, not just at the start. This means that an ORF could be part of a larger sequence or occur in non-coding regions where it doesn't correspond to a functional gene. Additionally, regulatory elements and post-transcriptional modifications, like splicing, may result in ORFs that are never translated into functional proteins. Therefore, while ORFs are potential coding sequences, not all ORFs correspond to actual gene-coding regions.
+An {\em open reading frame (ORF)} is not necessarily the coding sequence of a gene. Long ORFs can arise purely by chance, both in non-coding regions and in reading frames that overlap real genes, such as those on the opposite strand. Even when an ORF does correspond to a gene, its start may be misplaced: the start codon, an {\em ATG}, also encodes the amino acid methionine, which can appear within a gene, not just at the start, so the true start of the gene may lie downstream of the first ATG in the frame. Genes may also start with codons other than ATG. Finally, in eukaryotes, introns split the coding sequence of many genes into several exons, so such a coding sequence does not appear as a single ORF in the genome at all. Therefore, while ORFs are potential coding sequences, not all ORFs correspond to actual gene-coding regions.
 
 
 In general, the term ORF can apply to all uninterrupted sequences between a start and stop codon, not necessarily limited to the longest one, as many smaller ORFs may be present within a gene sequence. However, when identifying coding regions, researchers often prioritize the longest ORF as it is more likely to represent the primary protein-coding sequence. For this reason, open reading frame typically refers to the longest possible stretch of DNA (or RNA) between a start codon (often ATG in DNA) and a stop codon (TAA, TAG, or TGA in DNA) that could be translated into a protein. 
@@ -221,7 +219,7 @@ In general, the term ORF can apply to all uninterrupted sequences between a star
 
 {\em Gene prediction} is the process of identifying the location and structure of genes in a genome. This is a crucial step in understanding the genetic information encoded in a genome and is essential for studying gene function, evolution, and disease. Gene prediction can be done using computational methods, which analyze DNA sequences to identify potential genes based on sequence features and patterns.
 
-We will greatly simplify the process of gene prediction here and focus only on finding the longest open reading frames, i.e. the longest stretches between start and any stop codon. Let us start with a Python code that finds all open reading frames in a given DNA sequence.
+We will greatly simplify the process of gene prediction here and focus only on finding the longest open reading frames, i.e., the longest stretches between a start and any stop codon. Let us start with Python code that finds all open reading frames in a given DNA sequence.
 
 \vspace*{3mm}
 \begin{lstlisting}
@@ -240,10 +238,10 @@ def orf_finder(seq, frame, strand=1):
     start = None
     n = len(seq)
     for index, codon in codon_walk(seq, frame):
-        if not start and codon in START_CODON:
+        if start is None and codon in START_CODON:
             start = index
         # +3 below for including the stop codon
-        elif start and codon in STOP_CODON:
+        elif start is not None and codon in STOP_CODON:
             if strand == 1:
                 orfs.append((start, index+3, strand))
             else:
@@ -260,9 +258,9 @@ def get_orfs(seq):
     return orfs
 \end{lstlisting}
 
-The function \texttt{codon\_walk} is a generator that walks through a sequence in codons. The function \texttt{orf\_finder} finds open reading frames in a sequence; it remembers the first occurence of the start codon, and when it hits the stop codon in the current reading frame saves it to the list. The function \texttt{get\_orfs} finds ORFs in a sequence and its reverse complement.
+The function \texttt{codon\_walk} is a generator that walks through a sequence in codons. The function \texttt{orf\_finder} finds open reading frames in a sequence, it remembers the first occurrence of the start codon, and when it hits the stop codon in the current reading frame, saves it to the list. The function \texttt{get\_orfs} finds ORFs in a sequence and its reverse complement.
 
-Biologically, the stop codon is not translated and thus not considered part of the ORF, but in our code we include it in the returned sequence so we can easily see which stop codon was encountered and verify correctness.
+The stop codon is not translated into an amino acid, but in our code we include it in the returned coordinates. This lets us easily see which stop codon was encountered and, more importantly, matches the convention used in GenBank, where annotated coding sequences include the stop codon. We will need this later, when we compare our ORFs with the annotated genes.
 
 Let us test the code first using a really short sequence:
 
@@ -275,11 +273,11 @@ Let us test the code first using a really short sequence:
 >>> orfs
 [(6, 24, 1), (20, 32, -1)]
 >>> for start, end, strand in orfs:
-...    print(f"ORF: {start}-{end}, {int((end-start)/3) - 1}"
-...    "(strand: {strand})")
-...    s = seq[start:end] if strand==1 
-...        else seq[start:end].reverse_complement()
-...    print(f"{s}")
+...    print(f"ORF: {start}-{end}, {int((end-start)/3) - 1} "
+...          f"(strand: {strand})")
+...    s = (seq[start:end] if strand == 1
+...         else seq[start:end].reverse_complement())
+...    print(s)
 ...    print()
 ...
 ORF: 6-24, 5 (strand: 1)
@@ -289,11 +287,11 @@ ORF: 20-32, 3 (strand: -1)
 ATGTTTTTTTAA
 \end{lstlisting}
 
-This looks ok, but let us test the code on a real genome. We will use the genome of {\em Mycoplasma genitalium}, a bacterium with one of the smallest genomes known for a free-living organism. In {\em M. genitalium}, the TGA codon is unusual because it is typically a stop codon in most organisms, but in this organism, it encodes the amino acid tryptophan (Trp) instead of signaling termination. Therefore, the functional stop codons in M. genitalium are only TAA and TAG.
+This looks ok, but let us test the code on a real genome. We will use the genome of {\em Mycoplasma genitalium}, a bacterium with one of the smallest genomes of any organism that can grow in a pure laboratory culture. In {\em M. genitalium}, the TGA codon is unusual because it is typically a stop codon in most organisms, but in this organism, it encodes the amino acid tryptophan (Trp) instead of signaling termination. Therefore, the functional stop codons in {\em M. genitalium} are only TAA and TAG.
 
 \vspace*{3mm}
 \begin{lstlisting}
->>> seq = SeqIO.read("data/m_genitalium.fasta", "fasta").seq
+>>> seq = SeqIO.read("data/Mg.fasta", "fasta").seq
 >>> START_CODON = set(["ATG"])
 >>> STOP_CODON = set(["TAA", "TAG"])
 >>> orfs = get_orfs(seq)
@@ -301,9 +299,7 @@ This looks ok, but let us test the code on a real genome. We will use the genome
 10716
 \end{lstlisting}
 
-That's a lot of open reading frames! {\em M. genetalium}, in fact, has only about 500 protein-coding genes. So not all of these ORFs are actual genes. And then could also miss some of the 
-
-For a start, we can filter out the ORFs that are too short to be considered protein-coding genes. But how long actully are ORFs that we found? And how long are the actual genes in the genome? It is time to find this out.
+That's a lot of open reading frames! {\em M. genitalium}, in fact, has only about 500 protein-coding genes. So not all of these ORFs are actual genes. For a start, we can filter out the ORFs that are too short to be considered protein-coding genes. But how long actually are ORFs that we found? And how long are the actual genes in the genome? It is time to find this out.
 
 \section{ORF Lengths}
 
@@ -311,6 +307,7 @@ First, we start with our ORFs. Remember, we already looked for the longest stret
 
 \vspace*{3mm}
 \begin{lstlisting}
+>>> lengths = [int((end-start)/3-1) for start, end, _ in orfs]
 >>> n = len(orfs)
 >>> for i in range(0, 200, 20):
 >>>     k = sum(1 for l in lengths if i <= l < i+20)
@@ -325,15 +322,16 @@ First, we start with our ORFs. Remember, we already looked for the longest stret
 140 .. 160:    41 (0.4%)
 160 .. 180:    42 (0.4%)
 180 .. 200:    27 (0.3%)
->>> print(f"ORFs longer than {lmax}: {k:,} ({k/n:4.1%})")
-ORFs longer than 200: 354 (3.3%)
+>>> k = sum(1 for l in lengths if l >= 200)
+>>> print(f"ORFs of length 200 or more: {k:,} ({k/n:4.1%})")
+ORFs of length 200 or more: 357 (3.3%)
 \end{lstlisting}
 
-The vast majority of our ORFs are short—--too short, in fact, to be considered protein-coding genes. However, there are also some longer ORFs. Filtering out the shorter ones could be beneficial, but what would be a reasonable length threshold to use? Several approaches can help determine this, and we will examine them one at a time.
+The vast majority of our ORFs are short---too short, in fact, to be considered protein-coding genes. However, there are also some longer ORFs. Filtering out the shorter ones could be beneficial, but what would be a reasonable length threshold to use? Several approaches can help determine this, and we will examine them one at a time.
 
 \section{Permutation Test}
 
-Start and stop codons are not just randomly placed throughout the genome. At least we hope so. :). Throughout the evolution, the genome been reshaped to contain those codon at the right places so that within them the open reading frames are long enough to be considered genes. Surely, therefore, the distribution of the length of ORFs should be different from the ORFs inferred from some random sequence. We can test this hypothesis using a permutation test.
+Start and stop codons are not just randomly placed throughout the genome. At least we hope so. :) Within protein-coding regions, stop codons are absent from the reading frame used for translation, as any stop codon there would cut the protein short. Coding regions therefore contain long stretches without stop codons, much longer than we would expect to find by chance. Surely, therefore, the distribution of the length of ORFs should be different from the ORFs inferred from some random sequence. We can test this hypothesis using a permutation test.
 
 Let's permute our input sequence, and redo the ORF search.
 
@@ -364,12 +362,12 @@ We packed the code that reports on length distribution within \texttt{report\_le
 140 .. 160:     1 (0.0%)
 160 .. 180:     0 (0.0%)
 180 .. 200:     0 (0.0%)
-ORFs longer than 200: 0 (0.0%)
+ORFs of length 200 or more: 0 (0.0%)
 \end{lstlisting}
 
-That's a major difference with the distribution of ORF lengths when these are inferred from the actual, non-permuted sequence. In the permuted sequence, there are no ORFs longer than 200 codons, while in the actual sequence, there are 354 of them. This suggests that the distribution of ORF lengths in the actual sequence is not random and that the ORFs we found are not just random stretches of DNA.
+That's a major difference with the distribution of ORF lengths when these are inferred from the actual, non-permuted sequence. In the permuted sequence, there are no ORFs of 200 codons or more, while in the actual sequence, there are 357 of them. This suggests that the distribution of ORF lengths in the actual sequence is not random and that the ORFs we found are not just random stretches of DNA.
 
-We can use this information to set a threshold for the minimum ORF length. For example, we could set the threshold so that there is only a small chance that an ORF of that length would be found in a permuted sequence. Let us denote this probability as $\alpha$. By setting $\alpha = 0.05$, we indicate that we are willing to accept a 5\% probability of incorrectly identifying a random sequence as an ORF of interest. Thus, we would set the minimum ORF length threshold so that only 5\% of ORFs in a randomly permuted sequence would meet or exceed this length:
+We can use this information to set a threshold for the minimum ORF length. For example, we could set the threshold so that there is only a small chance that an ORF of that length would be found in a permuted sequence. Let us denote this probability as $\alpha$. By setting $\alpha = 0.05$, we indicate that we are willing to accept that 5\% of the ORFs found in a random sequence would pass our threshold. Note that this is a rate per ORF, not the probability of making an error in the whole analysis: with more than 16,000 ORFs in the permuted sequence, 5\% means that over 800 random ORFs would pass. Thus, we would set the minimum ORF length threshold so that only 5\% of ORFs in a randomly permuted sequence would meet or exceed this length:
 
 \vspace*{3mm}
 \begin{lstlisting}
@@ -378,7 +376,7 @@ We can use this information to set a threshold for the minimum ORF length. For e
 50
 \end{lstlisting}
 
-Turns out, in our permutation experiment, we need to set the threshold to 50. Setting $\alpha$ to, say, $0.01$, we would be more stringent and accept only 1\% probability of incorrectly identifying a random sequence as an ORF of interest. The threshold would then be:
+It turns out that, in our permutation experiment, we need to set the threshold to 50. Setting $\alpha$ to, say, $0.01$, we would be more stringent and allow only 1\% of random ORFs to pass the threshold. The threshold would then be:
 
 \vspace*{3mm}
 \begin{lstlisting}
@@ -389,19 +387,25 @@ Turns out, in our permutation experiment, we need to set the threshold to 50. Se
 
 Oh, well, it all depends on our choice of the degree of error we are willing to accept. In one way, we have replaced one problem, one parameter, with another, but at least we now think we understand what is going on and know that our threshold should be set probably in the range from 50 to, say, 100.
 
-\section{Mutlinomial Sequence Model}
+\section{Multinomial Sequence Model}
 
 Another approach to determining the minimum ORF length threshold is to use a multinomial sequence model. This model assumes that the sequence is generated by a distribution where each codon is drawn independently. We can either estimate the actual codon frequencies from the genome, or in a simplified case, assume all codons are equally likely (i.e., an i.i.d. uniform model, which is a special case of a multinomial distribution). Let's proceed with the latter and see where this leads us.
 
-Let us denote the probability of a run of a $k$ or more non-stop codons with $P$, and assert that this probability should be less than $\alpha$, the level of the error we would accept for finding the ORF if the sequence would be random. Assuming all codons are equally likely, and taking into account that there ae (usually) three stop codons, we can write:
+Let us denote the probability of a run of $k$ or more non-stop codons with $P$, and assert that this probability should be less than $\alpha$, the level of the error we would accept for finding the ORF if the sequence were random. Assuming all codons are equally likely, and taking into account that there are (usually) three stop codons, we can write:
 
 $$ P = \left(\frac{61}{64}\right)^k \leq \alpha  $$
 
 It is then easy to solve this equation for $k$:
 
-$$ k \geq \frac{\log(\alpha)}{\log(61) - log(64)} $$
+$$ k \geq \frac{\log(\alpha)}{\log(61) - \log(64)} $$
 
-With $\alpha = 0.05$, we get $k\approx 63$, and with $\alpha = 0.01$, we get $k\approx 96$. Which matches well with what we have found using the permutation test. Again, given a specific genome, we could be more precise by estimating the actual codon frequencies.
+With $\alpha = 0.05$, we get $k\approx 63$, and with $\alpha = 0.01$, we get $k\approx 96$. These thresholds are somewhat higher than those from the permutation test (50 and 77). And the situation gets worse: in {\em M. genitalium}, TGA is not a stop codon, so there are only two stop codons, and with $(62/64)^k$, the thresholds would rise even further, to $k\approx 95$ and $k\approx 146$.
+
+The reason for the discrepancy is that the genome of {\em M. genitalium} is far from uniform. It is rich in A and T, so the stop codons TAA and TAG occur much more often than the uniform model assumes. We can do better by estimating the probability of a stop codon from the actual nucleotide frequencies:
+$$ p_{\rm stop} = p_T p_A p_A + p_T p_A p_G \approx 0.059, $$
+which is almost twice the uniform estimate of $2/64 \approx 0.031$. Replacing $61/64$ with $1 - p_{\rm stop}$, we get
+$$ k \geq \frac{\log(\alpha)}{\log(1 - p_{\rm stop})}, $$
+that is, $k\approx 50$ for $\alpha = 0.05$ and $k\approx 76$ for $\alpha = 0.01$, which matches the permutation test very well. This is no coincidence: the permutation test preserves the nucleotide composition of the genome, and so does the multinomial model with estimated nucleotide frequencies.
 
 \section{Comparison with Actual Gene Models}
 
@@ -447,7 +451,7 @@ def load_gene_model(organism):
     return rec
 \end{lstlisting}
 
-Let us load the gene model for {\em M. genitalium} and see what kind of features do we have access to:
+Let us load the gene model for {\em M. genitalium} and see what kind of features we have access to:
 
 \vspace*{3mm}
 \begin{lstlisting}
@@ -455,10 +459,10 @@ Let us load the gene model for {\em M. genitalium} and see what kind of features
 >>> model.description
 'Mycoplasmoides genitalium G37, complete sequence'
 >>> len(model.features)
-1137
+1133
 >>> Counter(f.type for f in model.features)
-Counter({'gene': 568,
-         'CDS': 526,
+Counter({'gene': 566,
+         'CDS': 524,
          'tRNA': 36,
          'rRNA': 3,
          'ncRNA': 2,
@@ -466,9 +470,9 @@ Counter({'gene': 568,
          'tmRNA': 1})
 \end{lstlisting}
 
-Of the features above, there are two that may interest us. The {\em gene} annotation marks the entire region of DNA that defines a gene, including both coding and non-coding regions necessary for its function, such as regulatory elements, exons, and introns. In contrast, the {\em CDS} (Coding Sequence) annotation specifies only the segment that codes for the protein, starting from the start codon and ending at the stop codon, excluding non-coding regions like introns and regulatory sequences. Thus, while the gene encompasses all parts involved in the expression and regulation of a gene product, the CDS is limited to the exact sequence translated into a protein.
+As we have already noted in the previous chapter, NCBI lists this bacterium under its new genus name, {\em Mycoplasmoides}. Of the features above, there are two that may interest us. The {\em gene} annotation marks the region of DNA that corresponds to a gene, typically the transcribed region, including any introns in eukaryotes. It usually does not include the promoter and other regulatory elements. In bacterial annotations, the gene feature of a protein-coding gene often coincides with its coding sequence. The {\em CDS} (Coding Sequence) annotation specifies only the segment that codes for the protein, starting from the start codon and ending with (and including) the stop codon, excluding introns. Not every gene codes for a protein, though. Of the 566 genes in {\em M. genitalium}, 524 have a CDS, while the remaining ones code for RNA molecules, such as tRNAs and rRNAs.
 
-For our comparison with the ORFs we found, we therefore need to consider CDS, the coding sequences. There are 526 of them in the {\em M. genitalium} genome. 
+For our comparison with the ORFs we found, we therefore need to consider CDS, the coding sequences. There are 524 of them in the {\em M. genitalium} genome.
 
 Our second ingredient is the criteria for assessing how well our ORFs match the actual genes. To do this, we can use several scoring functions from the field of machine learning. First, we define the following terms:
 
@@ -499,7 +503,7 @@ Using these definitions, we can calculate:
     \]
 \end{itemize}
 
-Here is now our battle plan: we find all the longest ORFs in the genome, then threshold them by length $L$, and compare them with the actual genes in the genome. We will use the F1 score as our main metric to evaluate how well our ORFs match the actual genes. We will then vary the threshold $L$ and see how the F1 score changes. Below, we assume the \texttt{model} and the sequence \texttt{seq} are aready loaded.
+Here is now our battle plan: we find all the longest ORFs in the genome, then threshold them by length $L$, and compare them with the actual genes in the genome. We will use the F1 score as our main metric to evaluate how well our ORFs match the actual genes. We will then vary the threshold $L$ and see how the F1 score changes. Below, we assume the \texttt{model} and the sequence \texttt{seq} are already loaded.
 
 \vspace*{3mm}
 \begin{lstlisting}
@@ -520,8 +524,8 @@ for min_len in range(50, 200, 10):
     prec = len(tp) / len(sel)
     recall = len(tp) / len(locs)
     f1 = 2 * prec * recall / (prec + recall)
-    print(f"{min_len:3d} {len(sel):4d} {len(tp):4d} "
-          f"{len(sel) - len(tp):6d} "
+    print(f"{min_len:3d} {len(sel):4d} {len(tp):5d} "
+          f"{len(sel) - len(tp):5d} "
           f"{prec:5.3f} {recall:5.3f} {f1:5.3f}")
 \end{lstlisting}
 
@@ -529,25 +533,27 @@ Most of the above code is just for the output formatting. The actual calculation
 
 \vspace*{3mm}
 \begin{lstlisting}
-    L Pred  True False  Prec   Rec    F1
-    50 3172 1466   1706 0.462 0.858 0.601
-    60 2524 1453   1071 0.576 0.850 0.687
-    70 2142 1432    710 0.669 0.838 0.744
-    80 1945 1411    534 0.725 0.826 0.772
-    90 1798 1383    415 0.769 0.809 0.789
-   100 1679 1342    337 0.799 0.785 0.792
-   110 1588 1305    283 0.822 0.764 0.792
-   120 1522 1274    248 0.837 0.745 0.789
-   130 1469 1241    228 0.845 0.726 0.781
-   140 1419 1214    205 0.856 0.710 0.776
-   150 1371 1174    197 0.856 0.687 0.762
-   160 1323 1135    188 0.858 0.664 0.749
-   170 1272 1093    179 0.859 0.640 0.733
-   180 1228 1057    171 0.861 0.618 0.720
-   190 1182 1015    167 0.859 0.594 0.702
+  L Pred  True False  Prec   Rec    F1
+ 50 1209   419   790 0.347 0.800 0.484
+ 60  996   415   581 0.417 0.792 0.546
+ 70  841   410   431 0.488 0.782 0.601
+ 80  744   407   337 0.547 0.777 0.642
+ 90  672   398   274 0.592 0.760 0.666
+100  601   392   209 0.652 0.748 0.697
+110  554   382   172 0.690 0.729 0.709
+120  521   376   145 0.722 0.718 0.720
+130  493   363   130 0.736 0.693 0.714
+140  465   351   114 0.755 0.670 0.710
+150  439   337   102 0.768 0.643 0.700
+160  421   330    91 0.784 0.630 0.698
+170  398   320    78 0.804 0.611 0.694
+180  381   313    68 0.822 0.597 0.692
+190  365   307    58 0.841 0.586 0.691
 \end{lstlisting}
 
-The F1 score is highest for $L=100$, which is consistent with our previous findings. The F1 score is a good metric for evaluating the performance of our ORF prediction, as it balances precision and recall. In this case, the F1 score is highest when the minimum ORF length threshold is set to 100 codons. This threshold gives us a good balance between correctly identifying ORFs and avoiding false positives.
+The F1 score is a good metric for evaluating the performance of our ORF prediction, as it balances precision and recall. In this case, the F1 score is highest when the minimum ORF length threshold is set to $L=120$ codons, which gives us a good balance between correctly identifying genes and avoiding false positives. This threshold is somewhat higher than those suggested by the permutation test and the multinomial model. This is not surprising: those two approaches only control how many random ORFs pass the threshold, while the F1 score also accounts for how many real genes we lose.
+
+Notice also that the recall never exceeds 0.80, even for the shortest threshold. One reason is that our ORF finder considers only ATG as a start codon, while bacteria also use alternative start codons, most often GTG and TTG. In {\em M. genitalium}, about 15\% of annotated coding sequences start with a codon other than ATG. Another reason is that our ORFs always start at the first ATG in the frame, which, as discussed above, is not necessarily the true start of the gene. Of the 102 annotated coding sequences that do not exactly match any of our ORFs, regardless of length, 81 end at the same stop codon as one of our ORFs, but since their starts differ, our strict comparison counts them as a mismatch.
 
 \section{What's Next?}
 

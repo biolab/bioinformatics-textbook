@@ -1,12 +1,14 @@
 \chapter{Introduction to Molecular Biology}
 \label{ch:intro-mol-biol}
-
 Bioinformatics \marginnote{The term \textit{bioinformatics} was first introduced in the 1970s by Dutch scientist Paulien Hogeweg, who used it to describe the study of information processes in biological systems. The field really took off in the 1990s with the Human Genome Project, when sequencing technologies began generating data at unprecedented scales.}
 applies the methods of computer science to the understanding of biology. 
-Its goal is to uncover the processes that sustain life. Over the past few decades, biologists have developed tools and technologies to measure various aspects of biology and to study life at the molecular level. These data help us understand life at its most fundamental, molecular level and integrate this knowledge up to the level of organisms. As a computer engineer, you know that data requires storage, representation, and algorithms for analysis, visualization, and interpretation. In this course, we will look at bioinformatics as a tool for data analysis, focusing on methods that help biologists make sense of the vast amounts of data they can now collect.
+Its goal is to uncover the processes that sustain life. Over the past few decades, biologists have developed tools and technologies to measure various aspects of biology and to study life at the molecular level. These data help us understand life at its most fundamental molecular level and integrate this knowledge up to the level of organisms. 
 
-But we have to start with biology. Specifically, molecular biology, the study of the molecular processes that sustain life. This chapter provides an introduction to molecular biology, focusing on the central dogma of molecular biology, the structure of DNA, and the processes of transcription and translation. We will introduce these concepts gradually, trying to impose some logic in understanding the complexity of life. Note, however, that life was not designed in this way, but arose by evolution and tinkering, i.e., improving upon existing solutions. This is why life is so complex and why we need to study it in a structured way.
+As a computer engineer, you know that data requires storage, representation, and algorithms for analysis, visualization, and interpretation. In this course, we will look at bioinformatics as a tool for data analysis, focusing on methods that help biologists make sense of the vast amounts of data they can now collect.
 
+But we have to start with biology. Specifically, molecular biology, the study of the molecular processes that sustain life. This chapter provides an introduction to molecular biology, focusing on the central dogma of molecular biology, the structure of DNA, and the processes of transcription and translation. We will introduce these concepts gradually, trying to impose some logic on our understanding of the complexity of life. Note, however, that life was not designed in this way, but arose through evolution and tinkering, i.e., by improving upon existing solutions. This is why life is so complex and why we need to study it in a structured way.
+
+\vspace*{5mm}
 \section{Life}
 
 Life is a complex phenomenon
@@ -19,32 +21,105 @@ There are all kinds of living things on Earth, from the tiniest bacteria to the 
 
 \begin{figure}
   \includegraphics{figs/molbiol/biomass.jpeg}
-  \caption[][6pt]{Distribution of biomass by taxa. Plants make up the majority of biomass on Earth, followed by bacteria and animals. Humans make up less than 0.01\% of the total biomass. The figure is from ``The biomass distribution on Earth'' by Bar-On, Phillips, and Milo (2018), published in the journal {\em Proceedings of the National Academy of Sciences} (PNAS), where they estimate the total biomass of Earth to be around 550 gigatons of carbon, with 80\% of this biomass composed of plants, 13\% of bacteria, and only 0.01\% attributed to humans. Most of the animal biomass is composed of arthropods and fish.}
+  \caption[][6pt]{Distribution of biomass by taxa. Plants make up the majority of biomass on Earth, followed by bacteria and fungi; animals account for only a small fraction. Humans make up less than 0.01\% of the total biomass. The figure is from ``The biomass distribution on Earth'' by Bar-On, Phillips, and Milo (2018), published in the journal {\em Proceedings of the National Academy of Sciences} (PNAS), where they estimate the total biomass of Earth to be around 550 gigatons of carbon, with 80\% of this biomass composed of plants, 13\% of bacteria, and only 0.01\% attributed to humans. Most of the animal biomass is composed of arthropods and fish.}
   \label{fig:biomass}
 % https://en.wikipedia.org/wiki/Cellular_compartment
 \end{figure}
 
-Oh, did we mention taxa? We did. Like computer scientists, biologists like to organize and classify entities of their study into groups and hierarchies. Taxonomy is the science of classifying living things into groups based on common characteristics. The basic unit of taxonomy is the species, which is a group of organisms that can interbreed and produce fertile offspring. Species are further grouped into genera, families, orders, classes, phyla, and kingdoms. The highest level of classification is the domain,
-\marginnote{The three-domain system (Bacteria, Archaea, Eukarya) was proposed by Carl Woese in 1977. Before this, most biology textbooks described life using a five-kingdom system (Monera, Protista, Fungi, Plantae, Animalia). Woese’s discovery showed that Archaea are as different from Bacteria as they are from Eukaryotes, reshaping our view of the tree of life.}
+Oh, did we mention taxa? We did. Like computer scientists, biologists like to organize and classify the entities they study into groups and hierarchies. Taxonomy is the science of classifying living things into groups based on common characteristics. The basic unit of taxonomy is the species. For many sexually reproducing organisms, a species can be defined as a group whose members can interbreed and produce fertile offspring. Species are further grouped into genera, families, orders, classes, phyla, and kingdoms. The highest level of classification is the domain,
+\marginnote{Carl Woese and colleagues identified Archaea as a distinct lineage in 1977; the three-domain system (Bacteria, Archaea, Eukarya) was formally proposed by Woese, Kandler, and Wheelis in 1990. Before this, most biology textbooks described life using a five-kingdom system (Monera, Protista, Fungi, Plantae, Animalia). Woese’s discovery showed that Archaea are as different from Bacteria as they are from Eukaryotes, reshaping our view of the tree of life.}
 which is based on molecular data and includes three groups: Bacteria, Archaea, and Eukarya. These domains are based on differences in the genetic material of organisms and reflect the evolutionary relationships between them.
 
 \begin{figure}
   \includegraphics[width=0.8\textwidth]{figs/molbiol/taxonomy.png}
-  \caption[][6pt]{Major ranks in biological taxonomy: from species at the bottom to domains at the top. Also shown is the naming of the red fox, \textit{Vulpes vulpes}. All living organisms are named according to their genus and species, and since these names are in Latin, they are italicised. The first letter of the genus is capitalised and the species name is lower case. Often biologists would shorten this naming by using the first letter of the genus and the full species name, as in the example of the red fox, \textit{V. vulpes}.}
+  \caption[][6pt]{Major ranks in biological taxonomy: from species at the bottom to domains at the top. Also shown is the naming of the red fox, \textit{Vulpes vulpes}. All living organisms are named according to their genus and species, and since these names are Latin or Latinized, they are italicised. The first letter of the genus is capitalised and the species name is lower case. Biologists often shorten this naming by using the first letter of the genus and the full species name, as in the example of the red fox, \textit{V. vulpes}.}
   \label{fig:taxonomy}
 % https://en.wikipedia.org/wiki/Cellular_compartment
 \end{figure}
 
+\subsection{A First Taste of Bioinformatics}
+
+So far, we have talked about biological knowledge as if it were contained only in textbooks. In practice, much of modern biology is organized in large, publicly accessible databases. Bioinformatics programs routinely connect to these databases, retrieve information, and process it automatically.
+
+For example, the National Center for Biotechnology Information (NCBI) maintains, among many others, a taxonomy database that contains information about organisms and their classification. Python can access NCBI directly through the \texttt{Entrez} module of the Biopython library. In the following, for example let us ask the database about the red fox, \textit{Vulpes vulpes}, which we encountered in Figure~\ref{fig:taxonomy}.
+%
+\marginnote{The National Center for Biotechnology Information (NCBI) maintains many biological databases and computational resources. Similar large bioinformatics infrastructures exist elsewhere: in Europe, EMBL's European Bioinformatics Institute (EMBL-EBI) provides extensive molecular data resources, Japan hosts the DNA Data Bank of Japan, and China operates the National Genomics Data Center. Together with other institutions worldwide, these centers collect, curate, and provide programmatic access to biological data.}
+
+
+\vspace*{3mm}
+\begin{lstlisting}
+from Bio import Entrez
+
+Entrez.email = "your.email@example.com"
+
+handle = Entrez.esearch(
+    db="taxonomy",
+    term="Vulpes vulpes"
+)
+record = Entrez.read(handle)
+
+tax_id = record["IdList"][0]
+
+handle = Entrez.efetch(
+    db="taxonomy",
+    id=tax_id,
+    retmode="xml"
+)
+taxon = Entrez.read(handle)[0]
+
+print(taxon["ScientificName"])
+print(taxon["Lineage"])
+\end{lstlisting}
+
+The first query searches the taxonomy database and returns the
+identifier of the matching taxon. The second query uses this identifier
+to retrieve the corresponding record. Among many other fields, the
+record contains the scientific name and the complete taxonomic lineage.
+
+Running the code gives output similar to:
+
+\vspace*{3mm}
+\begin{lstlisting}
+Vulpes vulpes
+cellular organisms; Eukaryota; Opisthokonta; Metazoa;
+Eumetazoa; Bilateria; Deuterostomia; Chordata; Craniata;
+Vertebrata; Euteleostomi; Mammalia; Theria; Eutheria;
+Boreoeutheria; Laurasiatheria; Carnivora; Caniformia;
+Canidae; Vulpes
+\end{lstlisting}
+
+Notice that the database contains more levels than the simplified taxonomy shown in Figure~~\ref{fig:taxonomy}. We could also add some constrains in our code to print out exactly the ranks that are shown in Figure~\ref{fig:taxonomy}. Try it on your own to see if it works:
+
+\vspace*{3mm}
+\begin{lstlisting}
+ranks = {
+    "superkingdom": "Domain",
+    "kingdom": "Kingdom",
+    "phylum": "Phylum",
+    "class": "Class",
+    "order": "Order",
+    "family": "Family",
+    "genus": "Genus"
+}
+
+for item in taxon["LineageEx"]:
+    if item["Rank"] in ranks:
+        print(f"{ranks[item['Rank']]:8} {item['ScientificName']}")
+
+print(f"{'Species':8} {taxon['ScientificName']}")
+\end{lstlisting}
+
+Biological databases are designed to represent biological knowledge in a form that computers can query, link, and analyze. Learning how to work with such resources is one of the basic skills of bioinformatics.
 
 \section{Properties of Life}
 
-Let's start by considering what defines something as living. Today we know that there are many types of organisms, including animals, plants, fungi, and microorganisms. Despite their differences, all living organisms share certain characteristics not found in non-living things. These characteristics of life include being composed of cells -- the basic units of life -- the ability to grow and develop, to reproduce, to respond to stimuli, and to maintain internal balance, like humans who maintain their body temperature at \(37^\circ\mathrm{C}\). All of these functions require energy, which living organisms obtain by consuming food or other organisms. The ability to evolve and adapt to changing environments is another key characteristic of life. This is why we have so many different species on Earth, each adapted to its own niche.
+Let's start by considering what defines something as living. Today we know that there are many types of organisms, including animals, plants, fungi, and microorganisms. Despite their differences, all living organisms share certain characteristics not found in non-living things. These characteristics of life include being composed of cells -- the basic units of life -- and the ability to grow and develop, reproduce, respond to stimuli, and maintain internal balance, as humans do by maintaining their body temperature at \(37^\circ\mathrm{C}\). All of these functions require energy, which living organisms obtain from sources such as light, inorganic chemical reactions, or organic matter. Another key characteristic of life is that populations evolve over generations, allowing them to adapt to changing environments. This is why we have so many different species on Earth, each adapted to its own niche.
 
 \section{The Cell}
 
 Cells are the basic units of life.
 \reversemarginpar
-\marginnote{The estimate of the number of cells in the human body comes from the study ``An estimation of the number of cells in the human body'' published by Bianconi et al. in the {\em Annals of Human Biology} (2013), which provides a comprehensive calculation of the number of cells in different tissues. The number is approximate, as it can vary depending on individual factors such as size and health.}
+\marginnote{The estimate of the number of cells in the human body comes from the study ``An estimation of the number of cells in the human body'' published by Bianconi et al. in the {\em Annals of Human Biology} (2013), which estimated $3.72 \times 10^{13}$ cells. More recent systematic estimates, such as Sender et al. (2023), give sex- and size-dependent totals in the 28--36 trillion range.}
 \normalmarginpar
 All living organisms consist of one or more cells. Cells are the building blocks of life and are responsible for carrying out the processes that sustain life. They are highly organized structures that contain all the necessary components to carry out the functions of life. 
 
@@ -52,21 +127,32 @@ Some organisms consist of a single cell, and we refer to them as single-celled o
 
 Single-celled organisms 
 \marginnote{Baker’s yeast (\textit{Saccharomyces cerevisiae}) is a single-celled eukaryote. The same organism that makes bread rise is also a powerful model system in molecular biology — used to study cell division, genetics, and even aging.}
-are classified as either prokaryotes or eukaryotes. Prokaryotes are single-celled organisms that lack a defined nucleus or other membrane-bound organelles. They include bacteria and archaea. Eukaryotes are organisms that have a defined nucleus and membrane-bound organelles. Examples of unicellular eukaryotes include certain types of algae, protozoa, and fungi such as yeast. (More on the nucleus later.)
+are classified as either prokaryotes or eukaryotes. Prokaryotes are single-celled organisms that lack a defined nucleus or other membrane-bound organelles.
+%
+\marginnote{An \textit{organelle} is a specialized structure inside a cell that performs a particular function. Examples include the nucleus, mitochondria, and endoplasmic reticulum. One can think of organelles as specialized subsystems of a cell.}
+%
+They include bacteria and archaea. Eukaryotes are organisms that have a defined nucleus and membrane-bound organelles. Examples of unicellular eukaryotes include certain types of algae, protozoa, and fungi such as yeast. (More on the nucleus later.)
 
-Multicellular organisms are made up of many cells that work together. Humans, for example, are made up of \(6 \times 10^{13}\) cells. That's 60 trillion cells, or
-$$ 60,000,000,000,000 {\ \rm cells}. $$
-For comparison, there are about 300 billion stars in the Milky Way, so we have about 200 times more cells in our bodies than there are stars.
+Multicellular organisms are made up of many cells that work together. Humans contain on the order of \(3 \times 10^{13}\) cells; recent estimates are approximately 36 trillion cells for a 70-kg adult male and 28 trillion for a 60-kg adult female.
+For comparison, there are about 300 billion stars in the Milky Way, so we have roughly 100 times as many cells in our bodies as there are stars.
 
-Molecular biologists used to define cell types based on how they looked under the microscope, but now we can also define them based on their molecular characteristics, such as the genes they express. There is a special field of molecular biology called single-cell transcriptomics, 
-\marginnote{Single-cell transcriptomics has even been used to map all the different cell types in the human body. The Human Cell Atlas project, started in 2016, aims to catalog every cell type — like a “Google Maps” of our cells.}
+Molecular biologists used to define cell types based on how they looked under the microscope, but now we can also define them based on their molecular characteristics, such as the genes they express.
+%
+\marginnote{A gene is said to be \textit{expressed} when the information it contains is used to produce a functional product, usually RNA or protein. Gene expression can therefore be quantified, for example by measuring how much RNA from a gene is present in a cell.}
+%
+There is a special field of molecular biology called single-cell transcriptomics, 
+\marginnote{Single-cell transcriptomics has even been used to map all the different cell types in the human body. The Human Cell Atlas project, started in 2016, aims to catalog every cell type — like a ``Google Maps'' of our cells.}
 which studies the gene expression of individual cells. This field has revolutionized our understanding of cell types and their functions. More about this later in the course.
 
-Figure~\ref{fig:cell} shows a diagram of a typical eukaryotic cell. Is it an animal or plant cell? What organelles can you identify? The cell is a complex structure with many different parts, each with a specific function. Some of the most important organelles in a eukaryotic cell are the nucleus, which contains the genetic material, the mitochondria, which produce the cell's energy, and the endoplasmic reticulum, which is involved in protein synthesis. Plant cells have some additional organelles, such as chloroplasts, which are involved in photosynthesis, and a large central vacuole, which stores water and nutrients.
+Figure~\ref{fig:cell} shows a diagram of a typical eukaryotic cell. Is it an animal or plant cell? What organelles can you identify? The cell is a complex structure with many different parts, each with a specific function. Some of the most important organelles in a eukaryotic cell are the nucleus, which contains the genetic material, the mitochondria, which generate much of the cell's ATP,
+%
+\marginnote{ATP, or adenosine triphosphate, is the cell's main short-term energy currency. Energy released by biochemical reactions can be stored in ATP and later used to drive reactions that require energy.}
+%
+and the endoplasmic reticulum, which is involved in protein synthesis. Plant cells have some additional organelles, such as chloroplasts, which are involved in photosynthesis, and a large central vacuole, which stores water and nutrients.
 
 \begin{figure}[h!]
     \centering{\includegraphics[width=0.8\textwidth]{figs/molbiol/cell.png}}
-    \caption[][6pt]{The model of a eukaryotic cell, with some of its organelles labeled. Note that this is only a model, and that the actual cell is much more complex.}
+    \caption[][6pt]{A model of a eukaryotic cell, with some of its organelles labeled. Note that this is only a model, and that the actual cell is much more complex.}
     \label{fig:cell}
 % https://en.wikipedia.org/wiki/Cellular_compartment
 \end{figure}
@@ -80,78 +166,89 @@ Approximately 96 million cells die every minute as part of the natural process o
 
 \section{What Makes Up the Cell?}
 
-A cell is made up of many components, but primarily water (about 70\%) and proteins (about 20\%). Water serves as the cell's medium, providing an environment in which biochemical reactions can take place. Proteins are large biomolecules, typically made up of thousands or more atoms, that play critical roles in the cell, acting as building blocks, catalyzing chemical reactions, and forming membranes.
+A cell is made up of many components, but primarily water (about 70\%) and proteins (about 20\%). Water serves as the cell's medium, providing an environment in which biochemical reactions can take place. Proteins are large biomolecules, typically made up of thousands or more atoms, that play critical roles in the cell, acting as structural components, catalyzing chemical reactions, and carrying out many other cellular functions.
 
-The remaining 10\% of the cell is made up of smaller molecules, including sugars, fatty acids, signaling molecules, and energy-related molecules. If these smaller molecules were left alone, nothing significant would happen. It is the proteins that drive all essential cellular processes. They are the true engines of the cell, making everything inside the cell happen, and ultimately sustaining life.
+The remaining mass includes nucleic acids, lipids, carbohydrates, ions, and many smaller molecules involved in signaling, metabolism, and energy transfer. If these smaller molecules were left alone, nothing significant would happen. Proteins drive many essential cellular processes. They act as enzymes, structural components, motors, receptors, and molecular machines and are therefore central to the functioning of the cell.
 
 \section{Proteins}
 
 Proteins are large, complex molecules that are essential to life and are involved in almost every cellular process, from building and repairing tissues to regulating metabolism and transmitting signals. They are the workhorses of the cell, carrying out the functions that sustain life.
 
-Proteins are made up of long chains of amino acids linked together in a specific sequence. All organisms, with a few exceptions, use 20 amino acids that can be combined in various ways to produce diverse proteins. The sequence of amino acids in a protein determines its structure and function. Proteins range in size from 50 to 30,000 amino acids, with the average human protein containing about 300.
+Proteins are made up of long chains of amino acids linked together in a specific sequence. All organisms, with a few exceptions, use 20 amino acids that can be combined in various ways to produce diverse proteins. The sequence of amino acids in a protein determines its structure and function. Proteins vary enormously in size, from a few dozen to more than 30,000 amino acids, with a typical human protein containing a few hundred amino acids.
 
 Proteins have a complex three-dimensional structure 
 that is critical to their function. A protein's structure is determined by its amino acid sequence and the interactions between the amino acids.
 \marginnote{The first protein to have its 3D structure determined was myoglobin, solved by John Kendrew in 1958 using X-ray crystallography. This breakthrough earned him a Nobel Prize and opened the way to structural biology, revealing how a protein’s shape underpins its function.}
-Proteins can fold into specific shapes that allow them to interact with other molecules in the cell. Protein structure is described at four levels: primary (the amino acid sequence), secondary (local folding into helices or sheets), tertiary (the overall three-dimensional shape), and quaternary (the arrangement of multiple subunits into a larger complex).
+Proteins can fold into specific shapes that allow them to interact with other molecules in the cell. Protein structure is commonly described at four levels:
 
-For example, human insulin consists of 51 amino acids. The image in Fig.~\ref{fig:insulin-secondary} shows the secondary structure of human insulin. The primary structure of a protein is a sequence of amino acids that make up the molecule. In this figure, the amino acids are marked with circles containing a three-letter abbreviation. For example, the insulin chain begins with Met, which is an abbreviation for methionine. The secondary structure of a protein refers to local folding patterns, such as helices and sheets, which are important because they determine how the protein will fold into its three-dimensional shape.
+\begin{itemize}
+    \item \textbf{Primary structure}: the linear sequence of amino acids in the protein. This sequence is determined by the nucleotide sequence of the corresponding gene.
+    
+    \begin{figure}
+        \centering{\includegraphics[width=0.9\textwidth]{figs/molbiol/insulin-chain.png}}
+        \caption[][6pt]{Primary structure of \textit{preproinsulin}, the 110-amino-acid precursor of insulin. The protein is synthesized as one continuous chain: signal peptide--B chain--C-peptide--A chain. During processing, the signal peptide and C-peptide are removed. The remaining A and B chains, connected by disulfide bonds, form mature insulin, which contains 51 amino acids. Thus, the amino-acid sequence produced by translation is not necessarily the final form of a protein.}
+        \label{fig:insulin-secondary}
+    \end{figure}    
 
-\begin{figure}
-    \centering{\includegraphics[width=0.9\textwidth]{figs/molbiol/insulin-chain.png}}
-    \caption[][6pt]{Primary structure of insulin.}
-    \label{fig:insulin-secondary}
-\end{figure}
+    \item \textbf{Secondary structure}: local, regularly repeating folding patterns of the protein backbone, most commonly $\alpha$-helices and $\beta$-sheets. These structures are stabilized mainly by hydrogen bonds.
 
-The folding of a protein defines its function. Its tertiary structure gives the actual three-dimensional structure of the protein. Fig.~\ref{fig:insulin-3d} is what insulin looks like in 3D, where the representation of the amino acid sequences has been abstracted with parts represented as sheets and helices (don't worry about them now).
+    \item \textbf{Tertiary structure}: the overall three-dimensional shape of a single polypeptide chain. It arises from interactions among amino-acid side chains and largely determines the protein's function.
 
-\begin{figure}
-    \centering{\includegraphics[width=0.7\textwidth]{figs/molbiol/insulin-3d.png}}
-    \caption[][6pt]{Tertiary structure of an insulin.}
-    \label{fig:insulin-3d}
-\end{figure}
+    \begin{figure}
+        \centering{\includegraphics[width=0.7\textwidth]{figs/molbiol/insulin-3d.png}}
+        \caption[][6pt]{Tertiary structure of insulin. This is a schematic 3D representation of insulin rather than a literal picture of the molecule. Different colors are used to distinguish parts of the protein, including the A and B chains and their structural elements. The ribbon-like shapes show how the amino-acid backbone folds in three dimensions. Helices are drawn as coils, while less regular regions are shown as thinner segments. The yellow connections indicate disulfide bonds that help hold the two chains together.}
+        \label{fig:insulin-3d}
+    \end{figure}
+    
+
+    \item \textbf{Quaternary structure}: the arrangement of two or more polypeptide chains into a functional protein complex. For example, hemo\-glo\-bin consists of four polypeptide chains. In contrast, a protein made of only one chain, like myoglobin, a protein that stores oxygen in muscle cells, has no quaternary structure.
+\end{itemize}
+
+For example, mature human insulin consists of 51 amino acids distributed between two chains, the A chain and the B chain. The image in Figure~\ref{fig:insulin-secondary} shows the primary structure of the human preproinsulin precursor (110 amino acids), including the signal peptide and C peptide, which are removed during processing. The primary structure of a protein is a sequence of amino acids that make up the molecule. In this figure, the amino acids are marked with circles containing a three-letter abbreviation. The secondary structure of a protein refers to local folding patterns, such as helices and sheets, which are important because they determine how the protein will fold into its three-dimensional shape.
+
+The folding of a protein defines its function. Its tertiary structure gives the actual three-dimensional structure of the protein. Figure~\ref{fig:insulin-3d} is what insulin looks like in 3D, where the representation of the amino acid sequences has been abstracted with parts represented as sheets and helices (don't worry about them now).
 
 A protein's structure is critical to its function, as proteins fold into complex three-dimensional shapes that allow them to interact with other molecules in the cell. A protein’s shape, determined by its amino acid sequence and interactions, can also change in response to cellular signals to perform specific functions.
 
-Another example is leptin (Figure~\ref{fig:leptin}). Leptin is a hormone that helps regulate energy balance by inhibiting hunger. It is composed of 167 amino acids, and its tertiary structure is shown below. A deficiency of leptin leads to obesity. Molecular biologists have studied this in several model organisms, including mice.
+Another example is leptin (Figure~\ref{fig:leptin}). Leptin is a hormone that helps regulate energy balance by inhibiting hunger. Human leptin is synthesized as a 167-amino-acid precursor; after removal of its signal peptide, the mature secreted protein contains 146 amino acids. Its tertiary structure is shown below. Rare genetic deficiencies of leptin cause severe obesity, demonstrating leptin's important role in regulating energy balance. Molecular biologists have studied this in several model organisms, including mice.
 
 \begin{figure}
     \centering{\includegraphics[width=0.6\textwidth]{figs/molbiol/leptin.png}}
-    \caption[][6pt]{Tertiary structure of a leptin.}
+    \caption[][6pt]{Tertiary structure of leptin. This ribbon representation traces the backbone of the leptin protein in three dimensions. The spiral-shaped regions are $\alpha$-helices, one of the common forms of secondary structure. Their arrangement in space forms the tertiary structure of the protein.}
     \label{fig:leptin}
 \end{figure}
 
-The three-dimensional structures of proteins are often quite amazing. Consider chaperonins, a class of proteins that provide favorable conditions for the proper folding of other proteins. Fig.~\ref{fig:chaperonin} shows a rendering of their structure. Chaperonins form a protective chamber that allows proteins to fold correctly without interference from other molecules. Chaperonins are found in all cells and are critical for maintaining the health and function of the cell.
+The three-dimensional structures of proteins are often quite amazing. Consider chaperonins, a class of proteins that provide favorable conditions for the proper folding of other proteins. Figure~\ref{fig:chaperonin} shows a rendering of their structure. Chaperonins form a protective chamber that allows proteins to fold correctly without interference from other molecules. Chaperonins are found in all cells and are critical for maintaining the health and function of the cell.
     
 \begin{figure}
     \centering{\includegraphics[width=0.8\textwidth]{figs/molbiol/chaperonin.png}}
-    \caption[][6pt]{Tertiary structure of a chaperonin.}
+    \caption[][6pt]{Tertiary structure of a chaperonin. A chaperonin behaves almost like a molecular service composed of several identical modules. The subunits assemble into a hollow chamber. An unfolded protein enters, is isolated from interfering molecules, and is given a controlled environment in which to fold. The geometry of the protein complex is therefore directly related to the function it performs.}
     \label{fig:chaperonin}
 \end{figure}
 
 \section{Amino Acids}
 
-We have talked about amino acid chains, but we have never really said what they are. Now is the time. An amino acid is a simple organic compound containing both a carboxylic acid (-COOH), an amino group (-NH2), and a variable side chain (labeled R). Fig.~\ref{fig:aminoacid} shows the chemical structure of an amino acid.
+We have talked about amino acid chains, but we have never really said what they are. Now is the time. An amino acid is a simple organic compound containing a carboxylic acid group (-COOH), an amino group (-NH2), and a variable side chain (labeled R). Figure~~\ref{fig:aminoacid} shows the chemical structure of an amino acid.
 
 \begin{marginfigure}
     \includegraphics{figs/molbiol/aminoacid.png}
-    \caption[6pt]{Chemical structure of an amino acid.}
+    \caption[6pt]{General chemical structure of an amino acid. The central carbon atom is bonded to an amino group (\(-\mathrm{NH_2}\)), a carboxyl group (\(-\mathrm{COOH}\)), a hydrogen atom, and a variable side chain denoted by \(R\). The \(R\) group differs between amino acids and largely determines their chemical properties.}
     \label{fig:aminoacid}
 \end{marginfigure}
 
-The side chain is what defines each amino acid. Around 500 amino acids are known, but only twenty are commonly found in living organisms. It's worth noting that there are exceptions, as biology often defies strict rules, but this isn't the time to dive into those details. Some side chains are very simple; for example, the side chain of glycine is just a single hydrogen atom. Fig.~\ref{fig:aminoacids} shows all twenty side chains and the corresponding names of their amino acids.
+The side chain is what defines each amino acid. Hundreds of amino acids occur in nature, but twenty standard amino acids are commonly used to build proteins. Selenocysteine and pyrrolysine are incorporated into some proteins through special coding mechanisms, but this isn't the time to dive into those details. Some side chains are very simple; for example, the side chain of glycine is just a single hydrogen atom. Figure~~\ref{fig:aminoacids} shows all twenty side chains and the corresponding amino acid names.
 
 \begin{figure}
     \includegraphics{figs/molbiol/aminoacids.png}
-    \caption[6pt]{Chemical structure of an amino acid.}
+    \caption[6pt]{The twenty standard amino acids, grouped by the chemical properties of their side chains. These side-chain properties strongly influence how amino acids interact with water and with one another, and therefore how a protein folds into its three-dimensional structure. The three-letter and one-letter abbreviations commonly used for amino acids are also shown.}
     \label{fig:aminoacids}
 \end{figure}
 
-Proteins are chains of amino acids. They are actually made by linking amino acids together, in a row, one by one. The process is called polymerization, a condensation reaction in which two amino acids are linked by a peptide bond between the carbon of one and the nitrogen of the other. Here is a graphical depiction of the process. Fig.~\ref{fig:peptide-bond} shows the reaction that forms a peptide bond between two amino acids. The amino acids are shown in their abbreviated form, with the side chain represented by the letter R. The peptide bond is formed between the carboxyl group of one amino acid and the amino group of the other amino acid. The resulting molecule is called a dipeptide.
+Proteins are chains of amino acids. They are actually made by linking amino acids together, in a row, one by one. The process is called polymerization, a condensation reaction in which two amino acids are linked by a peptide bond between the carbon of one and the nitrogen of the other. Here is a graphical depiction of the process. Figure~~\ref{fig:peptide-bond} shows the reaction that forms a peptide bond between two amino acids. The amino acids are shown in their abbreviated form, with the side chain represented by the letter R. The peptide bond is formed between the carboxyl group of one amino acid and the amino group of the other amino acid. The resulting molecule is called a dipeptide.
 
 \begin{figure}
     \centering{\includegraphics[width=0.65\textwidth]{figs/molbiol/peptide-bond.png}}
-    \caption[6pt]{Formation of a peptide bond between two amino acids.}
+    \caption[6pt]{Formation of a peptide bond between two amino acids. The carboxyl group (\(-\mathrm{COOH}\), consisting of a carbon atom bonded to two oxygen atoms, one of which carries a hydrogen) of one amino acid reacts with the amino group (\(-\mathrm{NH_2}\), consisting of a nitrogen atom bonded to two hydrogens) of the other. An \(\mathrm{OH}\) from the carboxyl group and an \(\mathrm{H}\) from the amino group are released as water (\(\mathrm{H_2O}\)), while the carbon and nitrogen become connected by a peptide bond. Repeating this reaction links amino acids into a polypeptide chain.}
     \label{fig:peptide-bond}
 \end{figure}
 
@@ -161,25 +258,25 @@ The process of polymerization continues until the protein is complete, producing
 
 Metabolism is the set of chemical reactions that occur in living organisms to maintain life. These reactions are essential for the growth, development, and reproduction of organisms. Metabolism can be divided into two main categories: catabolism and anabolism. Catabolism refers to the breakdown of complex molecules into simpler ones, releasing energy in the process. Anabolism refers to the synthesis of complex molecules from simpler ones, requiring energy. Together, these processes balance cellular energy and enable the cell to function.
 
-Metabolism is regulated by enzymes, 
+Metabolism is regulated largely by enzymes, 
 \marginnote{The term \textit{enzyme} was first used in 1878 by Wilhelm Kühne. Before that, many scientists thought fermentation was caused by a mysterious ``vital force.'' Enzymes showed that life’s chemistry could be explained by proteins.}
-which are proteins that catalyze chemical reactions in the cell. Enzymes are highly specific, each catalyzing only one reaction. They can speed up reactions by a factor of up to a billion times.
+most of which are proteins that catalyze chemical reactions in the cell. Enzymes are generally highly specific, typically catalyzing a particular type of reaction on a restricted set of substrates. They can speed up reactions by a factor of up to a billion times.
 
-Here is an example of a metabolic pathway: glycolysis. Glycolysis is the breakdown of glucose into pyruvate, a process that releases energy. As shown in Fig.~\ref{fig:glycolysis}, glycolysis is the first step in cellular respiration, which generates energy for the cell. The energy released is used to produce ATP, the cell's primary energy source.
+Here is an example of a metabolic pathway: glycolysis. Glycolysis is the breakdown of glucose into pyruvate, a process that releases energy. As shown in Figure~~\ref{fig:glycolysis}, glycolysis is a central pathway for extracting energy from glucose and, under aerobic conditions, provides substrates for subsequent stages of cellular respiration. Some of the released energy is captured in ATP, the cell's primary energy currency.
 
 \begin{figure*}
     \includegraphics{figs/molbiol/glycolysis.png}
-    \caption[6pt]{The glycolysis pathway.}
+    \caption[6pt]{The glycolysis pathway. Glucose is converted through a sequence of intermediate metabolites into pyruvate. Each step is catalyzed by a specific enzyme, shown in blue. ATP is consumed in the early steps and produced later, while NADH is generated during oxidation of glyceraldehyde 3-phosphate. The pathway illustrates how cellular metabolism is organized as a sequence of enzyme-catalyzed transformations rather than as a single reaction.}
     \label{fig:glycolysis}
 \end{figure*}
 
-Chemicals such as glucose, fructose 6-phosphate, and others that serve as entry points, final products, or intermediates in chemical reactions are called metabolites. Glycolysis is an example of a metabolic pathway. All the reactions in glycolysis are catalyzed by enzymes, which are proteins that catalyze reactions that would otherwise occur too slowly to sustain life. Proteins in this and other pathways often have complex names that can be difficult for computer scientists to remember. For example, the enzyme that converts glucose 6-phosphate to fructose 6-phosphate is called phosphofructokinase. Fortunately, we don't need to memorize these names, but it's crucial to understand that almost no reaction in living organisms would happen without proteins. Proteins are essential to metabolic pathways and are key to making cells function and stay alive.
+Chemicals such as glucose, fructose 6-phosphate, and others that serve as entry points, final products, or intermediates in chemical reactions are called metabolites. Glycolysis is an example of a metabolic pathway. All the reactions in glycolysis are catalyzed by enzymes, which are proteins that catalyze reactions that would otherwise occur too slowly to sustain life. Proteins in this and other pathways often have complex names that can be difficult for computer scientists to remember. For example, the enzyme that converts glucose 6-phosphate to fructose 6-phosphate is called phosphoglucose isomerase. Phosphofructokinase catalyzes the subsequent conversion of fructose 6-phosphate to fructose 1,6-bisphosphate. Fortunately, we don't need to memorize these names, but it's crucial to understand that many essential cellular reactions would proceed far too slowly to sustain life without biological catalysts, most of which are proteins. Proteins are essential to metabolic pathways and are key to making cells function and stay alive.
 
-Just for a taste, Fig.~\ref{fig:glycolysis} shows what hexokinase looks like (find it in the glycolysis pathway--what does it do?). It consists of 617 amino acids.
+Just for a taste, Figure~~\ref{fig:hexokinase} shows what hexokinase looks like (find it in the glycolysis pathway in Figure~~\ref{fig:glycolysis}--what does it do?). The hexokinase shown here consists of 617 amino acids.
 
 \begin{figure}
     \centering{\includegraphics[width=0.7\textwidth]{figs/molbiol/hexokinase.png}}
-    \caption[][6pt]{Tertiary structure of a hexokinase.}
+    \caption[][6pt]{Tertiary structure of hexokinase. The ribbon representation shows how the polypeptide chain folds into a three-dimensional shape. The spiral regions are $\alpha$-helices, the flatter arrow-like regions are $\beta$-sheets, and the connecting segments are loops. Together these elements form the overall tertiary structure of the enzyme. A small region of this structure forms the active site (not marked on the figure), where glucose and ATP bind and the chemical reaction is catalyzed.}
     \label{fig:hexokinase}
 \end{figure}
 
@@ -191,13 +288,13 @@ while a typical eukaryotic cell is around 50 µm. The diameter of a cell is appr
 
 Incredibly, each cell contains around one billion protein molecules ($10^9$). This astonishing number highlights the immense molecular complexity of even a single cell.
 
-To add more perspective, there are about two million different protein types in the human body. The longest known protein, titin, consists of about 27,000 amino acids.
+To add more perspective, the human genome contains about 20,000 protein-coding genes, while alternative splicing and post-translational modifications can generate a much larger number of distinct protein forms. Titin, one of the largest known human proteins, contains more than 30,000 amino acids, depending on the isoform.
 
 \section{Proteins Degrade}
 
 Ok, so we have quite a lot of proteins in each cell. They are present, do their work, and then just stay there, unchanged. This idea seems to fit with what we learned in high school biology, where we were told that enzymes are not consumed in the reactions they catalyze. So, does that mean enzymes--and proteins in general--just stay in the cell forever?
 
-Not quite. Proteins have a limited lifespan—they do not last forever. They are continually degraded, often within hours. Here's the abstract of the publication where they have measured degradation rates (half-lives) for rat enzymes\marginnote{The publication is ``Degradation of glucose-metabolizing enzymes in the rat small intestine during starvation'' by G M Jones and R J Mayer, published in the {\em Biochemical Journal} (1973).}:
+Not quite. Proteins have a limited lifespan—they do not last forever. They are continually degraded and replaced, with half-lives ranging from minutes or hours to days, months, or even longer, depending on the protein. Here's the abstract of the publication in which the authors measured degradation rates (half-lives) for rat enzymes\marginnote{The quote is from the paper ``Degradation of glucose-metabolizing enzymes in the rat small intestine during starvation'' by G M Jones and R J Mayer, published in the {\em Biochemical Journal} (1973).}:
 
 \begin{quote}
     \textit{1. The degradation rates and half-lives of hexokinase, 6-phosphogluconate dehydrogenase, lactate dehydrogenase, pyruvate kinase, glucose 6-phosphate dehydrogenase, phosphoglycerate kinase and aldolase were calculated from measurements of the decline in activities of these enzymes in rat small intestine during starvation. 2. The half-lives of the enzymes are: hexokinase, 5.7h; 6-phosphogluconate dehydrogenase, 7.6h; glucose 6-phosphate dehydrogenase, 6.0h; pyruvate kinase, 8.9h; lactate dehydrogenase, 8.7h; phosphoglycerate kinase, 8.7h; aldolase, 5.1h. 3. The significance of the results is discussed with respect to the regulation of enzyme concentrations in response to changes in diet.}
@@ -205,7 +302,11 @@ Not quite. Proteins have a limited lifespan—they do not last forever. They are
 
 \section{The Puzzle}
 
-So now we know that cells contain vast numbers of proteins—and that proteins are what keep us alive. Yet they do not last very long, so someone has to make them. But who makes them, and where? Is there a separate factory for each of the two million different proteins, or a single factory that follows a recipe? And if so, where is that recipe stored?
+So now we know that cells contain vast numbers of proteins—and that proteins are what keep us alive. Yet they do not last very long, so someone has to make them. But who makes them, and where? Is there a separate factory for each protein-coding gene, 
+%
+\marginnote{Following this reasoning, a \textit{gene} would be a chapter from book of life (DNA) whose information is used to produce a functional product, that is, functional RNA or protein. A protein-coding gene contains the information needed to produce a protein, together with sequences involved in controlling and processing that information.}
+%
+or a single factory that follows a recipe? And if so, where is that recipe stored?
 
 \section{The Central Dogma of Molecular Biology}
 
@@ -213,39 +314,43 @@ The central dogma
 \marginnote{The phrase \textit{central dogma} was coined by Francis Crick in 1957. Interestingly, Crick admitted later that he did not fully know the meaning of ``dogma'' at the time — he just liked the sound of it.}
 of molecular biology is a framework that describes the flow of genetic information in cells. It states that genetic information generally flows from DNA to RNA to protein. The central dogma is a fundamental principle of molecular biology and is essential for understanding how genetic information is stored, replicated, and expressed in living organisms.
 
-In a nutshell, a discovery that took decades of research and earned numerous Nobel Prizes, the recipes for all the proteins involved in our lives are stored in a long molecule called DNA (Fig.~\ref{fig:dna-detail}), or deoxyribonucleic acid. In eukaryotes, DNA is tightly packed and stored in the nucleus of the cell. DNA is in the form of a double helix, with two complementary strands. Each strand is a chain of nucleotides attached to a sugar-phosphate backbone.
+In a nutshell, a discovery that took decades of research and earned numerous Nobel Prizes is that the recipes for all the proteins involved in our lives are stored in a long molecule called DNA (Figure~~\ref{fig:dna-detail}), or deoxyribonucleic acid. In eukaryotes, most DNA is tightly packed and stored in the nucleus; smaller amounts are also found in mitochondria and, in plants and algae, chloroplasts. DNA is in the form of a double helix, with two complementary strands. Each strand is a chain of nucleotides linked through a sugar-phosphate backbone.
 
 \begin{figure}
     \centering{\includegraphics[width=0.7\textwidth]{figs/molbiol/dna-detail.png}}
-    \caption[6pt]{The structure of DNA.}
+    \caption[6pt]{Structure of DNA. DNA consists of two strands running in opposite directions, indicated by their \(5'\) and \(3'\) ends. Each strand has a repeating sugar--phosphate backbone, while the nitrogenous bases point inward. Adenine pairs specifically with thymine, and guanine with cytosine, through hydrogen bonds. This complementary pairing means that the sequence of one strand determines the sequence of the other. The genetic information is carried by the order of the bases along the strand.}
     \label{fig:dna-detail}
 \end{figure}
 
-There are only four different nucleotides: cytosine (C), guanine (G), adenine (A), and thymine (T). Across the strands, thymine forms hydrogen bonds with adenine, and cytosine with guanine (Fig.~\ref{fig:tacg-bonds}). The strands are therefore complementary and carry the same genetic information in complementary form.
+DNA contains four types of nucleotides, distinguished by their nitrogenous bases: cytosine (C), guanine (G), adenine (A), and thymine (T). Between the strands, the bases pair through hydrogen bonds: thymine with adenine, and cytosine with guanine (Figure~~\ref{fig:tacg-bonds}). The strands are therefore complementary and carry the same genetic information in complementary form.
 
 \begin{figure}
     \centering{\includegraphics[width=0.8\textwidth]{figs/molbiol/tacg-bonds.png}}
-    \caption[6pt]{Hydrogen bonds between nucleotides in DNA.}
+    \caption[6pt]{Complementary base pairing in DNA. Adenine pairs with thymine through two hydrogen bonds, while guanine pairs with cytosine through three. Because these pairing rules are specific, knowing the base sequence on one DNA strand determines the complementary sequence on the other. The hydrogen bonds are individually weak enough to allow the strands to separate when needed, but collectively they help stabilize the double-stranded DNA molecule.}
     \label{fig:tacg-bonds}
 \end{figure}
 
-Did we say information? So soon! We were not there yet. But let us hurry (Fig.~\ref{fig:central-dogma}): Proteins are made in the cytoplasm, in factories called ribosomes. DNA—or rather a small subsequence of it—contains the recipe for a protein. This recipe must first be copied in the nucleus and then delivered to the ribosome. The carrier molecule is called RNA, ribonucleic acid. To conserve energy and avoid unnecessary complexity, Mother Nature figured out that it would be best to copy only the part of the DNA that encodes the amino acid sequence onto the RNA. This copying process is called transcription. The RNA (called messenger RNA because of its function) then travels from the nucleus to the ribosome, where its nucleotide sequence is translated into a sequence of amino acids, forming a protein.
+Did we say information? So soon! We were not there yet. But let us hurry (Figure~~\ref{fig:central-dogma}): Proteins are synthesized by ribosomes. In eukaryotes, for genes encoded in nuclear DNA, the relevant DNA sequence is first transcribed in the nucleus, and the resulting messenger RNA is then exported to the cytoplasm for translation. The carrier molecule is called RNA, ribonucleic acid. For a protein-coding gene, a region of DNA is transcribed into a precursor RNA that contains both coding and non-coding sequences. In eukaryotes, this RNA is processed to produce mature messenger RNA; when introns are present, they are removed by splicing.
+%
+\marginnote{Many eukaryotic genes contain \textit{introns}, sequences that are transcribed into precursor RNA but removed before translation. The remaining sequences are called \textit{exons}. The process that removes introns and joins exons together is called \textit{splicing}.}
+%
+This copying process is called transcription. The RNA (called messenger RNA because of its function) then travels from the nucleus to the ribosome, where its nucleotide sequence is translated into a sequence of amino acids, forming a protein.
 
 \begin{figure}
     \includegraphics{figs/molbiol/central-dogma.png}
-    \caption[][6pt]{The central dogma of molecular biology.}
+    \caption[][6pt]{A schematic view of the central dogma. The left side represents the nucleus and the right side the cytoplasm. The circular arrow above DNA indicates replication, while the downward arrows show the transfer of information from DNA to RNA and then to protein. In the translation stage, the ribosome is shown as the large gray complex, while tRNA molecules deliver individual amino acids that are joined into a growing protein chain. The diagram emphasizes that replication, transcription, and translation are distinct molecular processes carried out by different molecular machinery.}
     \label{fig:central-dogma}
 \end{figure}
 
-There are twenty amino acids that we need to encode. The encoding language consists of an alphabet of four nucleotides. A single letter from this alphabet is not sufficient to represent one of twenty amino acids, so we need words. Say that the length of the word is constant (we admit this may seem odd, but it is the simplest solution, and in the light of Occam's razor this assumption is perfectly acceptable). If we had words made of two nucleotides, they would encode $4 \times 4 = 16$ amino acids—not enough, since we need twenty. So we need at least three-letter words, or a sequence of three nucleotides. And, through evolution, a language with three-letter words emerged, each word encoding one amino acid. Different words encode the same amino acid, since there are $4 \times 4 \times 4 = 64$ possible combinations with a three-nucleotide sequence.
+There are twenty amino acids that we need to encode. The encoding language consists of an alphabet of four nucleotides. A single letter from this alphabet is not sufficient to represent one of the twenty amino acids, so we need words. Suppose that the length of the word is constant (we admit this may seem odd, but it is the simplest solution, and in the light of Occam's razor this assumption is perfectly acceptable). If we had words made of two nucleotides, they would encode $4 \times 4 = 16$ amino acids—not enough, since we need twenty. So we need at least three-letter words, that is, sequences of three nucleotides. And, through evolution, a language with three-letter words emerged. Most of these words encode an amino acid, while three serve as stop signals. There are $4 \times 4 \times 4 = 64$ possible three-nucleotide sequences: 61 encode amino acids in the standard genetic code, while three are stop codons. Multiple codons can encode the same amino acid.
 
 \begin{figure}
     \includegraphics{figs/molbiol/code-of-life.png}
-    \caption[][6pt]{The genetic code.}
+    \caption[][6pt]{The genetic code, shown as a lookup table from three-nucleotide sequences to amino acids. Each row lists an amino acid using its one-letter abbreviation together with the nucleotide triplets that encode it. Several different triplets may map to the same amino acid. The special START and STOP entries mark signals for beginning and ending translation. This table uses DNA notation with thymine (T). In messenger RNA codons, uracil (U) appears instead of T.}
     \label{fig:code-of-life}
 \end{figure}
 
-The sequence of three nucleotides is called a codon, the basic unit of the genetic code. The genetic code is the set of rules that determines how the nucleotide sequence of a gene is translated into the amino acid sequence of a protein. It is nearly universal, with the same codons encoding the same amino acids in almost all living organisms. It is also redundant, since most amino acids are encoded by more than one codon, and non-overlapping, meaning that each nucleotide is part of only one codon.
+A sequence of three nucleotides in messenger RNA that specifies an amino acid or a stop signal is called a codon. The genetic code is the set of rules that determines how codons in messenger RNA are translated into the amino acid sequence of a protein. It is nearly universal, with the same codons encoding the same amino acids in almost all living organisms. It is also redundant, since most amino acids are encoded by more than one codon, and non-overlapping within a given reading frame, meaning that codons are read consecutively in groups of three nucleotides.
 
 \section{What's Next?}
 

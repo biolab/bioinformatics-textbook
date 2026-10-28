@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REMOTE_DIR='~/anonymous/lectures/bi-textbook'
+BASE_URL='https://file.biolab.si/lectures/bi-textbook'
+
+cd "$(dirname "$0")"
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: $0 <files...>" >&2
+    echo "Examples:" >&2
+    echo "  $0 01-mol-bio.pdf" >&2
+    echo "  $0 0*.pdf" >&2
+    echo "  $0 01*" >&2
+    exit 1
+fi
+
+files=()
+for arg in "$@"; do
+    if [[ -f "$arg" ]]; then
+        files+=("$arg")
+        continue
+    fi
+
+    shopt -s nullglob
+    expanded=( $arg )
+    shopt -u nullglob
+
+    if [[ ${#expanded[@]} -eq 0 ]]; then
+        echo "Warning: no files match '$arg'" >&2
+        continue
+    fi
+
+    for f in "${expanded[@]}"; do
+        if [[ -f "$f" ]]; then
+            files+=("$f")
+        fi
+    done
+done
+
+if [[ ${#files[@]} -eq 0 ]]; then
+    echo "No files to copy." >&2
+    exit 1
+fi
+
+echo "Copying ${#files[@]} file(s) to file:$REMOTE_DIR/"
+scp "${files[@]}" "file:$REMOTE_DIR/"
+
+remote_files=()
+for f in "${files[@]}"; do
+    remote_files+=("$REMOTE_DIR/$(basename "$f")")
+done
+ssh file "LC_ALL=C chmod 644 ${remote_files[*]}"
+
+for f in "${files[@]}"; do
+    echo "  $BASE_URL/$(basename "$f")"
+done
